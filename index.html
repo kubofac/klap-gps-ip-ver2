@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS設定ツール Pro V6.7 (GPS対応)</title>
+    <title>GPS設定ツール V6.7</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="manifest" href="/manifest.json">  
     <style>
@@ -65,7 +66,6 @@
         <button class="nav-button" onclick="location.href='g_gps.html'">ラップタイマー画面へ移動</button>
     </div>
 
- 
     <div class="control-group">
         <label>サーキットプリセット読込:</label>
         <select id="circuitSelect"><option value="">-- 選択してください --</option></select>
@@ -166,21 +166,6 @@
             });
         }
 
-        // USB GPS 設定機能
-        document.getElementById('usbTestBtn').onclick = async () => {
-            try {
-                const device = await navigator.usb.requestDevice({ filters: [] });
-                await device.open();
-                localStorage.setItem('usb_interface', 1);
-                localStorage.setItem('usb_endpoint', 2);
-                document.getElementById('usbStatus').textContent = "保存成功: IF-1 / EP-2";
-                alert("USB GPS 情報を保存しました。");
-                await device.close();
-            } catch (e) { 
-                document.getElementById('usbStatus').textContent = "接続キャンセル"; 
-            }
-        };
-
         document.getElementById('btnDecide').onclick = () => {
             if (!p1Temp || !p2Temp) { alert("P1とP2の両方を設置してください。"); return; }
             const target = document.querySelector('input[name="targetLine"]:checked').value;
@@ -260,21 +245,21 @@
                 document.getElementById('selectedCircuitDisplay').textContent = data.name + " 反映完了";
             }
         };
-document.getElementById('clearAllLines').onclick = () => {
-    if(confirm("現在保存されている全てのライン（ST, S1, S2, S3）を削除しますか？パルス数やUSB設定は保持されます。")) {
-        ['startLine', 's1Line', 's2Line', 's3Line'].forEach(t => {
-            localStorage.removeItem(t + 'P1Lat');
-            localStorage.removeItem(t + 'P1Lon');
-            localStorage.removeItem(t + 'P2Lat');
-            localStorage.removeItem(t + 'P2Lon');
-            if (window.fixedLineLayers && window.fixedLineLayers[t]) {
-                map.removeLayer(window.fixedLineLayers[t]);
+
+        document.getElementById('clearAllLines').onclick = () => {
+            if(confirm("現在保存されている全てのラインを削除しますか？")) {
+                ['startLine', 's1Line', 's2Line', 's3Line'].forEach(t => {
+                    localStorage.removeItem(t + 'P1Lat');
+                    localStorage.removeItem(t + 'P1Lon');
+                    localStorage.removeItem(t + 'P2Lat');
+                    localStorage.removeItem(t + 'P2Lon');
+                    if (activeLines[t]) map.removeLayer(activeLines[t]);
+                });
+                displayStatus();
+                alert("全てのラインをクリアしました。");
             }
-        });
-        displayStatus();
-        alert("全てのラインをクリアしました。");
-    }
-};
+        };
+
         window.onload = () => {
             initMap();
             loadCircuitList();
@@ -283,8 +268,6 @@ document.getElementById('clearAllLines').onclick = () => {
             document.getElementById('setPulse').textContent = (localStorage.getItem('pl1') || "1") + " パルス/回転";
             document.getElementById('setThreshold').textContent = (localStorage.getItem('thresh') || "20") + "m";
             document.getElementById('setLapCoolDown').textContent = ((localStorage.getItem('cooldown') || "30000")/1000) + "秒";
-            const uif = localStorage.getItem('usb_interface');
-            if (uif) document.getElementById('usbStatus').textContent = "保存済み (IF:" + uif + ")";
         };
     </script>
 </body>
