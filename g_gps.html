@@ -44,58 +44,62 @@
         .close-btn { background: var(--hrc-red); padding: 15px; text-align: center; font-weight: bold; border-radius: 4px; cursor: pointer; }
         /* iPhone 8 (375px) 以下の端末専用の調整 */
 /* iPhone 8 (375px) 以下の端末専用：はみ出しと右余白の解消 */
-/* iPhone 8 (375px) 以下の端末専用：レイアウト崩壊の最終解決 */
+/* iPhone 8 (375px) 以下の端末専用：右余白の消去と左はみ出しの強制解消 */
 @media screen and (max-width: 375px) {
-    /* 1. 全体を保持するコンテナを右端に「固定」し、幅を画面の70%程度に制限 */
+    /* 1. 全体コンテナ：右端に強制固定し、中身を右揃えにする */
     .main-ui-container {
-        right: 0px !important; 
-        left: auto !important; /* 左からの干渉を無視 */
-        width: 360px !important; /* iPhoneの全幅(375)より少し小さく設定 */
-        gap: 8px !important; /* カラム間の隙間を極限まで詰める */
-        justify-content: flex-end !important; /* 中身を右に寄せる */
+        right: 5px !important;    /* 画面右端からの距離 */
+        left: auto !important;     /* 左側の自由度を消す */
+        width: 95vw !important;    /* 画面幅の95%以内に収める */
+        gap: 10px !important;      /* カラム間の隙間を45pxから10pxへ */
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: flex-end !important; /* ★ここが重要：中身を右に寄せる */
+        align-items: flex-start !important;
     }
 
-    /* 2. ラップタイム表示（一番左）が左にはみ出さないよう幅を絞る */
-    #info-overlay {
-        flex: 1 !important; /* 空いたスペースを埋める */
-        min-width: 0 !important; /* はみ出し防止の呪文 */
-        align-items: flex-end !important;
-    }
-
-    #display1 {
-        font-size: 11vh !important; /* 18vhから大幅縮小（左へのはみ出しの主因） */
-        line-height: 1.0 !important;
-        text-align: right !important;
-    }
-
-    #rpm_val {
-        font-size: 8vh !important; /* 回転数も連動して縮小 */
-    }
-
-    /* 3. 真ん中のラップ履歴パネルをスリム化 */
-    #lap-panel {
-        width: 100px !important; /* 175pxから大幅カット */
-        min-width: 100px !important;
-    }
-    
-    .lap-row {
-        font-size: 14px !important;
-    }
-
-    /* 4. SPEEDパネル（一番右）の右余白を消し去る */
+    /* 2. 一番右：SPEED/TEMPパネルの余白を消す */
     .data-panel {
-        width: 80px !important; /* 固定幅を小さくして「右余白」を物理的に消す */
+        width: 80px !important;     /* 幅を110pxから80pxへ固定 */
         min-width: 80px !important;
-        margin-right: 5px !important; /* 画面端との微調整 */
+        margin: 0 !important;       /* 余計なマージンを排除 */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important; /* 文字を右に寄せる */
     }
 
     .val {
-        font-size: 30px !important; /* 数字もパネル幅に合わせて縮小 */
-        text-align: right !important;
+        font-size: 32px !important; /* 数字をパネル幅に合わせる */
+        width: 100% !important;
+        text-align: right !important; /* 数字自体も右寄せ */
     }
 
     .label {
-        font-size: 10px !important;
+        width: 100% !important;
+        text-align: right !important; /* ラベルも右寄せ */
+    }
+
+    /* 3. 真ん中：ラップ履歴パネルのスリム化 */
+    #lap-panel {
+        width: 110px !important;    /* 175pxから縮小 */
+        min-width: 110px !important;
+    }
+
+    /* 4. 一番左：ラップタイム表示（押し出しの主因）を縮小 */
+    #info-overlay {
+        flex: 1 !important;         /* 残りのスペースを埋める */
+        align-items: flex-end !important; /* 全体を右に寄せる */
+        overflow: hidden !important;
+    }
+
+    #display1 {
+        font-size: 11vh !important;  /* 18vhから大幅縮小。これで左へのはみ出しを防ぐ */
+        text-align: right !important;
+        white-space: nowrap !important;
+    }
+
+    #rpm_val {
+        font-size: 9vh !important;   /* 回転数も少し小さく */
         text-align: right !important;
     }
 }
