@@ -44,63 +44,58 @@
         .close-btn { background: var(--hrc-red); padding: 15px; text-align: center; font-weight: bold; border-radius: 4px; cursor: pointer; }
         /* iPhone 8 (375px) 以下の端末専用の調整 */
 /* iPhone 8 (375px) 以下の端末専用：右余白の完全撤廃 */
+/* iPhone 8 (375px) 以下の端末専用：右余白と左はみ出しの完全解消 */
 @media screen and (max-width: 375px) {
-    /* 1. 全体コンテナ：右端 0 に固定し、中身を「右基準」で並べる */
+    /* 1. コンテナを右端「0」に固定。widthを100%にして右余白を物理的に消す */
     .main-ui-container {
-        right: 0px !important;       /* 10pxから0pxへ。これで右の隙間を物理的に消す */
-        left: auto !important;
-        gap: 8px !important;         /* カラム間の隙間を極限まで詰める */
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: flex-end !important; /* ★最重要：右端を基準に整列 */
-        align-items: flex-start !important;
+        right: 0px !important;       /* 10pxから0pxへ。これで右の隙間を殺す */
         width: 100% !important;      /* 画面幅いっぱいを使い切る */
-        padding-right: 2px !important; /* 画面端との衝突を防ぐ最小限の余白 */
+        gap: 6px !important;         /* カラム間の45pxという巨大な隙間を6pxに凝縮 */
+        justify-content: flex-end !important; /* 中身を右側にギュッと寄せる */
+        padding-right: 4px !important; /* 画面端に文字がくっつきすぎない程度の微調整 */
+        align-items: flex-end !important;
     }
 
-    /* 2. SPEEDパネル（一番右）：パネル自体の右余白を消し、文字を右寄せにする */
+    /* 2. SPEEDパネル（一番右）：幅を絞り、文字を右端へピタッと寄せる */
     .data-panel {
-        width: 75px !important;      /* 幅を110pxから75pxへ極限まで絞る */
+        width: 75px !important;      /* 110pxから75pxへ。これで右余白の原因を排除 */
         min-width: 75px !important;
         margin: 0 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-end !important; /* ★重要：中の文字を右端にピタッと揃える */
+        align-items: flex-end !important; /* ★重要：数字とラベルを右端に揃える */
     }
 
     .val {
-        font-size: 30px !important;
+        font-size: 28px !important;  /* 40pxから28pxへ縮小 */
         text-align: right !important; /* 数字自体も右寄せ */
         width: 100% !important;
     }
 
     .label {
         font-size: 9px !important;
-        text-align: right !important; /* ラベルも右寄せ */
+        text-align: right !important;
         width: 100% !important;
     }
 
-    /* 3. 真ん中：ラップ履歴パネルのスリム化（左側への押し出しを軽減） */
+    /* 3. 真ん中：ラップ履歴パネルをダイエットさせ、左側のスペースを作る */
     #lap-panel {
-        width: 100px !important;     /* 175pxから100pxへ大幅縮小 */
-        min-width: 100px !important;
+        width: 95px !important;      /* 175pxから95pxへ大幅カット */
+        min-width: 95px !important;
     }
 
-    /* 4. 一番左：ラップタイム表示（はみ出しの主因）を大幅縮小 */
+    /* 4. 一番左：ラップタイム表示（はみ出しの主因）を画面内に収まるサイズに */
     #info-overlay {
-        flex: 1 !important;
-        align-items: flex-end !important; /* 数値を右寄せ */
-        min-width: 0 !important;
+        flex: 1 !important;          /* 余ったスペースに柔軟に収まる設定 */
+        min-width: 0 !important;     /* これがないと左に突き抜け続けます */
     }
 
     #display1 {
-        font-size: 11vh !important;   /* 18vhから大幅縮小。これで左側が画面内に収まります */
+        font-size: 10vh !important;  /* 18vhから大幅カット。これで左側が画面内に戻ります */
         text-align: right !important;
         white-space: nowrap !important;
     }
 
     #rpm_val {
-        font-size: 8vh !important;    /* 回転数表示もスリム化 */
+        font-size: 8vh !important;   /* 回転数もスリム化 */
         text-align: right !important;
     }
 }
