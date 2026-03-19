@@ -44,43 +44,59 @@
         .close-btn { background: var(--hrc-red); padding: 15px; text-align: center; font-weight: bold; border-radius: 4px; cursor: pointer; }
         /* iPhone 8 (375px) 以下の端末専用の調整 */
 /* iPhone 8 (375px) 以下の端末専用：はみ出しと右余白の解消 */
+/* iPhone 8 (375px) 以下の端末専用：レイアウト崩壊の最終解決 */
 @media screen and (max-width: 375px) {
+    /* 1. 全体を保持するコンテナを右端に「固定」し、幅を画面の70%程度に制限 */
     .main-ui-container {
-        right: 5px !important;  /* 右端に極限まで寄せる */
-        gap: 12px !important;    /* カラム間の隙間(45px)を大幅に詰め、左への押し出しを防ぐ */
-        align-items: flex-end; /* 下揃えにしてレイアウトを安定させる */
+        right: 0px !important; 
+        left: auto !important; /* 左からの干渉を無視 */
+        width: 360px !important; /* iPhoneの全幅(375)より少し小さく設定 */
+        gap: 8px !important; /* カラム間の隙間を極限まで詰める */
+        justify-content: flex-end !important; /* 中身を右に寄せる */
     }
 
-    /* ラップタイム表示（一番左のカラム）のサイズ調整 */
+    /* 2. ラップタイム表示（一番左）が左にはみ出さないよう幅を絞る */
     #info-overlay {
-        min-width: 140px;      /* 最小幅を確保しつつ、はみ出しを抑制 */
+        flex: 1 !important; /* 空いたスペースを埋める */
+        min-width: 0 !important; /* はみ出し防止の呪文 */
+        align-items: flex-end !important;
     }
 
     #display1 {
-        font-size: 14vh !important; /* 18vhだとiPhoneではデカすぎて左にはみ出るため調整 */
-        white-space: nowrap;
+        font-size: 11vh !important; /* 18vhから大幅縮小（左へのはみ出しの主因） */
+        line-height: 1.0 !important;
+        text-align: right !important;
     }
 
     #rpm_val {
-        font-size: 10vh !important; /* 回転数表示も少しスリムに */
+        font-size: 8vh !important; /* 回転数も連動して縮小 */
     }
 
-    /* ラップ履歴（真ん中のカラム）のサイズ調整 */
+    /* 3. 真ん中のラップ履歴パネルをスリム化 */
     #lap-panel {
-        width: 120px !important; /* 175pxから縮小してスペースを捻出 */
+        width: 100px !important; /* 175pxから大幅カット */
+        min-width: 100px !important;
     }
     
     .lap-row {
-        font-size: 15px !important; /* 文字を少し小さく */
+        font-size: 14px !important;
     }
 
-    /* SPEED/TEMP（一番右のカラム）のサイズ調整 */
+    /* 4. SPEEDパネル（一番右）の右余白を消し去る */
     .data-panel {
-        width: 85px !important;  /* 110pxから縮小 */
+        width: 80px !important; /* 固定幅を小さくして「右余白」を物理的に消す */
+        min-width: 80px !important;
+        margin-right: 5px !important; /* 画面端との微調整 */
     }
 
     .val {
-        font-size: 32px !important; /* 40pxから縮小。これで右の余白を消し去る */
+        font-size: 30px !important; /* 数字もパネル幅に合わせて縮小 */
+        text-align: right !important;
+    }
+
+    .label {
+        font-size: 10px !important;
+        text-align: right !important;
     }
 }
     </style>
