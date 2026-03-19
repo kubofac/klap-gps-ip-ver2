@@ -277,22 +277,142 @@ function mainLoop() {
 }
 
 function drawTacho(rpm) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const w = canvas.width, h = canvas.height, segments = 75, active = Math.floor((rpm / 14000) * segments);
-    const sX = 20, hY = 80, bY = h - 20, rad = bY - hY, curveEnd = 30;
-    for (let i = 0; i <= segments; i++) {
-        let x, y, ang, prog;
-        if (i <= curveEnd) { prog = i/curveEnd; ang = Math.PI + (prog*(Math.PI/2)); x = sX+rad+Math.cos(ang)*rad; y = hY+rad+Math.sin(ang)*rad; }
-        else { prog = (i-curveEnd)/(segments-curveEnd); x = (sX+rad)+(prog*(w-15-(sX+rad))); y = hY; ang = 1.5*Math.PI; }
-        if (i % 10 === 0 || i === segments) {
-            ctx.save(); ctx.fillStyle = i < active ? "#fff" : "#444"; ctx.font = "italic bold 22px Arial";
-            ctx.textAlign = "center"; ctx.fillText(Math.round((i/segments)*14), x+Math.cos(ang)*45, y+Math.sin(ang)*45); ctx.restore();
-        }
-        if (i < segments) {
-            let color = (i < active) ? (((i/segments)*14000 >= 12500) ? "var(--hrc-red)" : ((i/segments)*14000 >= 8000 ? "var(--hrc-blue)" : "#fff")) : "#222";
-            ctx.fillStyle = color; ctx.save(); ctx.translate(x, y); ctx.rotate(ang + Math.PI/2); ctx.fillRect(-5, -23, 10, 46); ctx.restore();
-        }
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    // キャンバスサイズの更新（リサイズ対応）
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
     }
+
+    ctx.clearRect(0, 0, w, h);
+
+    // --- 1. レイアウト設定（レスポンシブR計算） ---
+    // iPhone 8 (375px) は R=85 固定、AQUOS (412px〜) は最大150まで拡大
+    let rad = 85; 
+    if (w > 375) {
+        rad = Math.min(150, 85 + (w - 375) * 1.8);
+    }
+
+    const sideMargin = 45;   
+    const topMargin = 60;    
+    const footerHeight = h * 0.85; 
+    const barWeight = 48;   
+    const rLimit = w;        
+    const vLimit = topMargin + rad; 
+
+    const vLen = footerHeight - vLimit; 
+    const cLen = (Math.PI * rad) / 2;                 
+    const hLen = rLimit - (sideMargin + rad); 
+    const totalLen = vLen + cLen + hLen;
+    const activeLen = (rpm / 14000) * totalLen;
+
+    // パス定義（描画専用）
+    function createPath(c) {
+        c.beginPath();
+        c.lineCap = "butt";
+        c.lineJoin = "round";
+        c.moveTo(sideMargin, footerHeight);
+        c.lineTo(sideMargin, vLimit);
+        c.arc(sideMargin + rad, vLimit, rad, Math.PI, Math.PI * 1.5);
+        c.lineTo(rLimit, topMargin);
+    }
+
+    // --- 2. ベース描画（グレー） ---
+    ctx.save();
+    createPath(ctx);
+    ctx.strokeStyle = "#222222";
+    ctx.lineWidth = barWeight;
+    ctx.stroke();
+    ctx.restore();
+
+    // --- 3. カラーバー描画（白・青・赤の順） ---
+    // 現在の回転数(activeLen)までを白で引く
+    ctx.save();
+    createPath(ctx);
+    ctx.lineWidth = barWeight;
+    ctx.setLineDash([activeLen, totalLen]);
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.stroke();
+    ctx.restore();
+
+    // 6000rpm以上の青
+    const blueStart = totalLen * (6000 / 14000);
+    if (activeLen > blueStart) {
+        ctx.save();
+        createPath(ctx);
+        ctx.lineWidth = barWeight + 1;
+        ctx.setLineDash([activeLen - blueStart, totalLen]);
+        ctx.lineDashOffset = -blueStart;
+        ctx.strokeStyle = "#0055FF";
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    // 11000rpm以上の赤
+    const redStart = totalLen * (11000 / 14000);
+    if (activeLen > redStart) {
+        ctx.save();
+        createPath(ctx);
+        ctx.lineWidth = barWeight + 2;
+        ctx.setLineDash([activeLen - redStart, totalLen]);
+        ctx.lineDashOffset = -redStart;
+        ctx.strokeStyle = "#FF0000";
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    // --- 4. 250rpm刻みの高精度セグメント（黒スリット） ---
+    ctx.save();
+    createPath(ctx);
+    ctx.lineWidth = barWeight + 10;
+    ctx.strokeStyle = "#000000"; 
+    
+    // 250rpm目盛り (56分割)
+    const sWidth = 1.8; 
+    const sGap = (totalLen / 56) - sWidth;
+    ctx.setLineDash([sWidth, sGap]);
+    ctx.lineDashOffset = sWidth / 2;
+    ctx.stroke();
+
+    // 1000rpm目盛り (14分割、少し太く)
+    const mWidth = 4;
+    const mGap = (totalLen / 14) - mWidth;
+    ctx.setLineDash([mWidth, mGap]);
+    ctx.lineDashOffset = mWidth / 2;
+    ctx.stroke();
+    ctx.restore();
+
+    // --- 5. 数値（ラベル） ---
+    ctx.font = "italic 900 24px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#666"; 
+    const offset = 48 + (rad - 85) * 0.15; 
+
+    for (let i = 0; i <= 14; i++) {
+        const prog = i / 14;
+        let lx, ly;
+        if (prog < 0.1) {
+            lx = sideMargin - offset;
+            ly = footerHeight - (prog / 0.1) * vLen;
+        } else if (prog < 0.35) {
+            const p = (prog - 0.1) / 0.25;
+            const theta = Math.PI + (p * Math.PI / 2);
+            lx = sideMargin + rad + Math.cos(theta) * (rad + offset);
+            ly = vLimit + Math.sin(theta) * (rad + offset);
+        } else {
+            const p = (prog - 0.35) / 0.65;
+            lx = (sideMargin + rad) + p * (w - 20 - (sideMargin + rad));
+            ly = topMargin - offset;
+        }
+        ctx.fillText(i, Math.max(15, Math.min(w - 15, lx)), ly);
+    }
+
+    // --- 6. 数値表示の更新（元コードのロジック） ---
     document.getElementById('rpm_val').textContent = Math.floor(rpm);
     document.getElementById('speed_val').textContent = Math.round(currentSpeedKmh);
     document.getElementById('max_speed_val').textContent = maxSpeedInLap;
