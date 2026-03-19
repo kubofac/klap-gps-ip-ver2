@@ -42,6 +42,32 @@
         #history-table th { color: var(--hrc-red); border-bottom: 2px solid var(--hrc-red); padding: 8px; text-align: center; }
         #history-table td { padding: 8px; border-bottom: 1px solid #333; text-align: center; }
         .close-btn { background: var(--hrc-red); padding: 15px; text-align: center; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        /* iPhone 8 (375px) 以下の端末専用の調整 */
+@media screen and (max-width: 375px) {
+    .main-ui-container {
+        /* 右端からの距離を 0 にして右に密着させる */
+        right: 0px !important; 
+        /* カラム同士の間隔を少し詰めて、狭い画面内に収める */
+        gap: 20px !important; 
+        /* 全体的に少し右に寄せるためにマージンを調整 */
+        padding-right: 5px;
+    }
+
+    #lap-panel {
+        /* iPhone 8の幅に合わせてパネル幅を最適化 */
+        width: 150px !important;
+    }
+
+    .data-panel {
+        /* データパネルも少しスリムに */
+        width: 90px !important;
+    }
+
+    #rpm_val {
+        /* フォントサイズを微調整して重なりを防ぐ */
+        font-size: 11vh !important;
+    }
+}
     </style>
 </head>
 <body>
