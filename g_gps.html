@@ -45,32 +45,55 @@
         /* iPhone 8 (375px) 以下の端末専用の調整 */
 /* iPhone 8 (375px) 以下の端末専用：はみ出しと右余白の解消 */
 /* iPhone 8 (375px) 以下の端末専用：右余白の物理的排除 */
+/* iPhone 8 (375px) 以下の端末専用：最終レイアウト調整 */
 @media screen and (max-width: 375px) {
-    /* 1. コンテナ自体の位置を「右端 0」に強制固定 */
+    /* 1. 全体コンテナを右端に「完全吸着」させる */
     .main-ui-container {
-        right: 0px !important;    /* 10pxから0pxへ。これで右隙間を消す */
-        width: 100vw !important;  /* 画面幅いっぱいを使い切る */
-        padding-right: 5px !important; /* ほんの少しの微調整のみ残す */
-        gap: 8px !important;      /* カラム間の隙間を最小化 */
-        justify-content: flex-end !important; /* 中身を右に寄せる */
-        pointer-events: none;     /* 背後のキャンバス操作を邪魔しない */
+        right: 0px !important;    /* 10pxから0pxへ。これで右の隙間を消す */
+        gap: 8px !important;      /* カラム間の隙間を極限まで詰める */
+        align-items: flex-end !important; /* ★最重要：右端を基準に揃える */
+        width: auto !important;
+        padding-right: 5px !important;
     }
 
-    /* 2. SPEEDパネル（一番右）の内部余白と幅をリセット */
-    .data-panel {
-        width: 75px !important;   /* 110pxから75pxへ極限まで絞る */
-        min-width: 75px !important;
-        margin-right: 0px !important; /* 右マージンを完全にゼロにする */
-        padding: 0 !important;
-        align-items: flex-end !important;
+    /* 2. 一番左：ラップタイム表示（はみ出しの主因）を大幅縮小 */
+    #info-overlay {
+        align-items: flex-end !important; /* 数値を右寄せ */
+        flex-shrink: 1 !important;        /* 画面幅に合わせて縮むようにする */
+        min-width: 0 !important;
     }
 
-    /* 3. SPEEDの数値自体の右余白を消す */
-    .val {
-        font-size: 28px !important; /* パネル幅に合わせて縮小 */
+    #display1 {
+        font-size: 11vh !important;  /* 18vhだとiPhoneでは物理的に左にはみ出るため縮小 */
         text-align: right !important;
-        margin: 0 !important;
-        padding: 0 !important;
+        white-space: nowrap !important;
+    }
+
+    #rpm_val {
+        font-size: 8vh !important;   /* 回転数表示もスリム化 */
+        text-align: right !important;
+    }
+
+    /* 3. 真ん中：ラップ履歴パネルをスリム化 */
+    #lap-panel {
+        width: 100px !important;    /* 175pxから縮小してスペースを捻出 */
+        min-width: 100px !important;
+    }
+    
+    .lap-row {
+        font-size: 14px !important;
+    }
+
+    /* 4. 一番右：SPEEDパネル（右余白の主因）の幅を極限まで絞る */
+    .data-panel {
+        width: 75px !important;     /* 110pxから75pxへ。これで「右余白」を消し去る */
+        min-width: 75px !important;
+        align-items: flex-end !important; /* 中の文字を右に寄せる */
+    }
+
+    .val {
+        font-size: 30px !important;  /* 数字をパネル幅に合わせる */
+        text-align: right !important;
         width: 100% !important;
     }
 
@@ -78,24 +101,6 @@
         font-size: 9px !important;
         text-align: right !important;
         width: 100% !important;
-    }
-
-    /* 4. 真ん中のラップ履歴をさらにスリム化（左へのはみ出し対策） */
-    #lap-panel {
-        width: 95px !important;    /* 175pxから大幅カット */
-        min-width: 95px !important;
-    }
-
-    /* 5. 一番左のラップタイム文字をさらに小さく（押し出し防止） */
-    #display1 {
-        font-size: 10vh !important; /* 18vhから約半分へ。これで左側が画面内に収まります */
-        text-align: right !important;
-        margin-right: 0px !important;
-    }
-
-    #rpm_val {
-        font-size: 8vh !important;
-        text-align: right !important;
     }
 }
     </style>
