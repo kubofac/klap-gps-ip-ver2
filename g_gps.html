@@ -62,39 +62,42 @@
         footer { height: 55px; display: flex; gap: 2px; padding: 4px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
         button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 9px; font-weight: bold; min-width: 0; cursor: pointer; }
 
-        /* --- 【iPhone 8】上寄せを最優先し、全体を強制引き上げ --- */
+        /* --- 【iPhone 8】画面上端を基準にすべてを再配置 --- */
         @media screen and (max-width: 667px) and (orientation: landscape) {
+            /* 親コンテナを画面上端に固定し、高さを最小限に */
             .main-ui-container { 
-                top: 0 !important; /* コンテナ自体を最上部へ */
+                top: 0 !important; 
                 right: 8px !important; 
-                height: auto !important;
-                pointer-events: none; 
+                height: 1px !important; /* コンテナが下に伸びるのを防ぐ */
+                display: block !important; /* flexを解除して絶対配置の子要素を制御 */
             }
             
-            /* 右側（履歴・SPEED）：バーのすぐ下まで引き上げ */
+            /* 右側（履歴・SPEED）：上から45pxの位置に強制固定 */
             .right-panels { 
-                position: relative !important;
-                margin-top: 45px !important; /* ★ここを減らすとさらに上がります */
+                position: absolute !important; 
+                top: 45px !important; 
+                right: 0px !important; 
+                display: flex !important;
                 pointer-events: auto;
             }
             
-            /* 左側（回転数・ラップ）：高さを維持しつつ右と分離 */
+            /* 左側（回転数・ラップ）：上から60pxの位置に強制固定 */
             #info-overlay { 
                 position: absolute !important; 
-                right: 255px !important; /* 空白を適正化 */
-                top: 55px !important;   /* 高さを以前の良好な位置に固定 */
-                margin-top: 0px !important; 
+                top: 60px !important; 
+                right: 210px !important; /* 空白を詰め、右パネルとの距離を適正に */
+                margin: 0 !important; 
                 pointer-events: none;
             }
 
             .data-panel { width: 75px !important; gap: 1px !important; }
             .data-panel .val { font-size: 26px !important; }
-            #lap-panel { width: 105px !important; max-height: 220px !important; }
+            #lap-panel { width: 105px !important; max-height: 200px !important; }
             #display1 { font-size: 13.5vh !important; }
             #rpm_val { font-size: 9.5vh !important; }
         }
 
-        /* --- 【AQUOS】左側（回転数・ラップ）のみ下げ --- */
+        /* --- 【AQUOS】左側のみ下げ（iPhoneに影響なし） --- */
         @media screen and (min-width: 400px) and (orientation: landscape) {
             .main-ui-container { top: 110px !important; } 
             #info-overlay { margin-top: 75px !important; margin-right: 50px !important; }
@@ -105,13 +108,6 @@
             #lap-panel { width: 160px !important; max-height: 55vh !important; } 
             #sector-container { font-size: 3vh !important; gap: 15px !important; }
         }
-
-        /* History Page */
-        #history-page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        #history-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 20px; }
-        #history-table th { color: var(--hrc-red); border-bottom: 2px solid var(--hrc-red); padding: 8px; text-align: center; }
-        #history-table td { padding: 8px; border-bottom: 1px solid #333; text-align: center; }
-        .close-btn { background: var(--hrc-red); padding: 15px; text-align: center; font-weight: bold; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
