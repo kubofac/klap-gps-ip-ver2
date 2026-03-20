@@ -14,7 +14,8 @@
         --bg-dark: #000000; 
         --hrc-orange: #FFA500; 
     }
-        body, html {
+    
+    body, html {
         margin: 0; padding: 0; width: 100vw; height: 100vh;
         background-color: var(--bg-dark); color: var(--hrc-white);
         font-family: 'Arial Black', sans-serif; overflow: hidden;
@@ -54,7 +55,7 @@
 
     /* 中央：ラップ履歴（セクター内包） */
     #lap-panel { 
-        width: 160px; 
+        width: 170px; /* 横幅を少し広げてセクターを収まりやすく */
         height: 100%; 
         display: flex; 
         flex-direction: column; 
@@ -64,13 +65,36 @@
     #lap { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     #lap::-webkit-scrollbar { display: none; }
     
-    /* ラップ行：縦に並べてセクターを下に配置 */
-    .lap-item { display: flex; flex-direction: column; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 5px 0; }
-    .lap-row { display: flex; justify-content: space-between; font-size: 16px; font-weight: 900; }
-    .sector-row { display: flex; justify-content: flex-start; gap: 8px; font-size: 10px; color: #aaa; margin-top: 2px; }
+    /* ラップ行：アイテム全体 */
+    .lap-item { 
+        display: flex; 
+        flex-direction: column; 
+        border-bottom: 1px solid rgba(255,255,255,0.1); 
+        padding: 5px 0; 
+    }
+    /* 上段：L番号とタイム */
+    .lap-row { 
+        display: flex; 
+        justify-content: space-between; 
+        font-size: 16px; 
+        font-weight: 900; 
+        width: 100%;
+    }
+    /* ★下段：セクターを強制的に横一行に並べる設定 */
+    .sector-row { 
+        display: flex; 
+        flex-direction: row !important; /* 強制横並び */
+        justify-content: flex-start; 
+        gap: 10px; /* セクター間の隙間 */
+        font-size: 10px; 
+        color: #aaa; 
+        margin-top: 3px; 
+        width: 100%;
+        white-space: nowrap; /* 折り返し禁止 */
+    }
     .best-lap { color: var(--hrc-red) !important; }
 
-    /* 右側：データパネル (SPEED/MAX/TEMP) */
+    /* 右側：データパネル */
     .data-panel { display: flex; flex-direction: column; gap: 12px; width: 90px; padding-top: 30px; }
     .data-box { display: flex; flex-direction: column; align-items: flex-end; }
     .label { font-size: 10px; color: var(--hrc-red); font-weight: bold; }
@@ -88,69 +112,36 @@
         display: flex; align-items: center; justify-content: center; height: 100%; pointer-events: auto; 
     }
 
-    /* --- 【iPhone 8】専用レイアウト：すべてを上端へ強制引き上げ --- */
+    /* --- 【iPhone 8】専用レイアウト --- */
     @media screen and (max-width: 667px) and (orientation: landscape) {
         .main-ui-container { top: 0 !important; height: 100% !important; }
-        
-        /* 右側：SPEED枠 */
-        .data-panel { 
-            position: absolute !important; 
-            right: 12px !important; 
-            top: 65px !important; 
-            width: 80px !important; 
-            gap: 4px !important; 
-            padding-top: 0 !important; 
-            display: flex !important; 
-        }
-        
-        /* 中央：ラップ履歴 */
-        #lap-panel { 
-            position: absolute !important; 
-            right: 105px !important; 
-            top: 65px !important; 
-            width: 125px !important; 
-            padding-top: 0 !important; 
-        }
+        .data-panel { position: absolute !important; right: 12px !important; top: 65px !important; width: 80px !important; gap: 4px !important; padding-top: 0 !important; display: flex !important; }
+        #lap-panel { position: absolute !important; right: 105px !important; top: 65px !important; width: 130px !important; padding-top: 0 !important; }
         .lap-row { font-size: 13px !important; }
-
-        /* 左側：回転数/タイム */
-        #info-overlay { 
-            position: absolute !important; 
-            right: 250px !important; 
-            top: 20px !important; 
-        }
+        .sector-row { font-size: 9px !important; gap: 6px !important; } /* iPhone 8用にさらに微調整 */
+        #info-overlay { position: absolute !important; right: 260px !important; top: 20px !important; }
         #rpm_val { font-size: 9vh !important; }
         #display1 { font-size: 18vh !important; }
     }
 
-    /* --- 【AQUOS】専用：左側（回転数・ラップ）のみ下げ --- */
+    /* --- 【AQUOS】専用：左側下げ --- */
     @media screen and (min-width: 400px) and (orientation: landscape) {
         .val { font-size: 42px !important; } 
         .label { font-size: 14px !important; } 
-        #lap-panel { width: 170px !important; }
+        #lap-panel { width: 180px !important; }
         .lap-row { font-size: 19px !important; }
-        
-        /* AQUOSでは左側だけを一段下げる */
-        #info-overlay { 
-            position: relative !important; 
-            margin-top: 85px !important; 
-        }
+        .sector-row { font-size: 12px !important; gap: 12px !important; }
+        #info-overlay { position: relative !important; margin-top: 85px !important; }
     }
 
-    /* --- 履歴表示ページ (以前のスタイルを完全復元) --- */
+    /* --- 履歴表示ページ (Modal) --- */
     #history-page { 
-        display: none; 
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-        background: rgba(0,0,0,0.9); 
-        z-index: 2000; padding: 20px; box-sizing: border-box; 
-        overflow-y: auto; color: #fff;
+        display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); 
+        z-index: 2000; padding: 20px; box-sizing: border-box; overflow-y: auto; color: #fff;
     }
     .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
     .history-title { font-size: 20px; font-weight: 900; color: var(--hrc-red); }
-    .close-btn { 
-        background: #333; color: #fff; border: 1px solid #555; padding: 5px 15px; border-radius: 4px; 
-        font-weight: bold; cursor: pointer; height: auto !important; flex: none !important; font-size: 12px !important;
-    }
+    .close-btn { background: #333; color: #fff; border: 1px solid #555; padding: 5px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; height: auto !important; flex: none !important; font-size: 12px !important; }
     #history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
     #history-table th { color: var(--hrc-red); padding: 8px; text-align: center; border-bottom: 2px solid var(--hrc-red); }
     #history-table td { padding: 8px; text-align: center; border-bottom: 1px solid #333; }
