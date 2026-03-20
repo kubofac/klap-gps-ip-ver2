@@ -62,25 +62,39 @@
         footer { height: 55px; display: flex; gap: 2px; padding: 4px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
         button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 9px; font-weight: bold; min-width: 0; cursor: pointer; }
 
-        /* --- iPhone 8 横画面：変更なし --- */
+        /* --- iPhone 8 横画面：各パーツの位置を再固定 --- */
         @media screen and (max-width: 667px) and (orientation: landscape) {
             .main-ui-container { top: 0 !important; right: 8px !important; height: 100%; width: 100%; pointer-events: none; }
-            .right-panels { position: absolute !important; right: 0px !important; top: -15px !important; pointer-events: auto; }
+            
+            /* 右側（履歴・SPEED）：上部限界位置 */
+            .right-panels { 
+                position: absolute !important; 
+                right: 0px !important; 
+                top: -15px !important; 
+                pointer-events: auto;
+            }
+            
+            /* 左側（回転数・ラップ）：ここを上に引き上げ (55px -> 45px) */
+            #info-overlay { 
+                position: absolute !important; 
+                right: 265px !important; 
+                top: 45px !important; /* ★値を小さくして上に上げました */
+                margin-top: 0px !important; /* AQUOSの影響を打ち消し */
+                pointer-events: none;
+            }
             .data-panel { width: 75px !important; gap: 1px !important; }
             .data-panel .val { font-size: 26px !important; }
             #lap-panel { width: 105px !important; max-height: 230px !important; }
-            #info-overlay { position: absolute !important; right: 265px !important; top: 55px !important; pointer-events: none; }
             #display1 { font-size: 13.5vh !important; }
             #rpm_val { font-size: 9.5vh !important; }
         }
 
-        /* --- 【修正】AQUOS専用：回転数／ラップのみをさらに下げる --- */
+        /* --- AQUOS専用：左側のみを下げる --- */
         @media screen and (min-width: 400px) and (orientation: landscape) {
             .main-ui-container { top: 110px !important; } 
             
-            /* 左側：margin-topを追加して右パネルより低く配置 */
             #info-overlay { 
-                margin-top: 40px !important; /* ★ここを増やすと回転数／ラップがさらに下がります */
+                margin-top: 65px !important; /* ★AQUOS側のみさらに下げました */
                 margin-right: 50px !important; 
             }
 
