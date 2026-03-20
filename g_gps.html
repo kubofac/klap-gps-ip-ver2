@@ -42,62 +42,53 @@
         #history-table th { color: var(--hrc-red); border-bottom: 2px solid var(--hrc-red); padding: 8px; text-align: center; }
         #history-table td { padding: 8px; border-bottom: 1px solid #333; text-align: center; }
         .close-btn { background: var(--hrc-red); padding: 15px; text-align: center; font-weight: bold; border-radius: 4px; cursor: pointer; }
-       /* iPhone 8 (375px) 以下：右端ゼロ距離・右揃え強制 */
-/* iPhone 8 (375px) 以下専用：詳細度を極限まで高めた強制右寄せ */
-/* iPhone 8 横画面 (width: 667px / height: 375px) 専用の設定 */
-/* iPhone 8 横画面 (667px) 専用：3桁表示の完全最適化 */
+       /* iPhone 8 横画面：全体を上に引き上げてボタンとの重なりを回避 */
 @media screen and (max-width: 667px) and (orientation: landscape) {
-    
-    /* 1. 全体コンテナ：右端に吸着 */
+
+    /* 1. 全体コンテナ：下からの位置(bottom)を上げ、画面上部へ寄せる */
     .main-ui-container {
+        bottom: 85px !important;    /* 以前より20〜30pxほど上に引き上げ */
         right: 0px !important;
         width: auto !important;
         justify-content: flex-end !important;
+        align-items: flex-end !important; /* 下端を揃えて上に伸ばす */
         padding-right: env(safe-area-inset-right) !important;
-        gap: 10px !important;
+        gap: 8px !important;
     }
 
-    /* 2. SPEEDパネル：3桁(100〜199)が余裕を持って収まる90px幅 */
-    .data-panel {
-        width: 90px !important;
-        min-width: 90px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-end !important; /* ★右端揃えを強制 */
-        margin: 0 !important;
-    }
-
-    /* 3. 各データ項目：SPEEDやMAXの箱 */
+    /* 2. 各パネルの「縦の余白」を詰めてコンパクトにする */
     .data-box {
-        width: 100% !important;
+        margin-bottom: 4px !important; /* 10pxから4pxへ。これでTEMPを上に逃がす */
         display: flex !important;
         flex-direction: column !important;
-        align-items: flex-end !important; /* ★中身を右寄せ */
-        margin-bottom: 8px !important;
+        align-items: flex-end !important;
     }
 
-    /* 4. 数値：右詰めを維持し、3桁でも崩れない設定 */
-    .val {
-        font-size: 38px !important;
-        text-align: right !important; /* ★右寄せ：桁が増えても右端は不動 */
-        width: 100% !important;
-        letter-spacing: -1px !important; /* 数字の間隔を詰め、3桁でもシャープに */
-        line-height: 1.0 !important;
-        padding-right: 4px !important;
+    /* 3. TEMP（温度）などのフォントサイズを微調整 */
+    /* SPEEDの下にあるTEMPなどの項目がボタンに当たらないよう、少しだけ小さく */
+    .data-panel .val {
+        font-size: 32px !important;  /* 38pxから少しだけ下げて縦幅を節約 */
+        line-height: 0.9 !important; /* 行間を詰め、縦の専有面積を減らす */
     }
 
-    /* 5. ラベル：SPEEDの文字を数値の右端に合わせる */
-    .label {
-        font-size: 10px !important;
-        text-align: right !important;
-        width: 100% !important;
-        padding-right: 4px !important;
+    .data-panel .label {
+        font-size: 9px !important;
+        margin-bottom: -1px !important;
     }
 
-    /* 6. 左側のラップタイム：画面内に収まるようサイズ調整 */
+    /* 4. ラップ履歴パネルも縦に縮小 */
+    #lap-panel {
+        max-height: 180px !important; /* 縦幅に上限を設け、ボタンへの侵食を防ぐ */
+        overflow: hidden !important;
+    }
+
+    /* 5. 一番左のラップタイムの位置調整 */
+    #info-overlay {
+        margin-bottom: 5px !important; /* 下側の余白を削る */
+    }
+
     #display1 {
-        font-size: 14vh !important;
-        text-align: right !important;
+        font-size: 13vh !important;  /* 縦幅節約のため少しだけ縮小 */
     }
 }
     </style>
