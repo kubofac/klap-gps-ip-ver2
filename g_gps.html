@@ -7,108 +7,114 @@
     <title>KLAP DEGI ULTIMATE V2 - INT GPS</title>
       <link rel="manifest" href="/manifest.json"> 
 <style>
-        :root { --hrc-red: #E4002B; --hrc-white: #ffffff; --bg-dark: #000000; --hrc-orange: #FFA500; --hrc-blue: #004098; }
+    :root { --hrc-red: #E4002B; --hrc-blue: #004098; --hrc-white: #ffffff; --bg-dark: #000000; --hrc-orange: #FFA500; }
+    
+    body, html {
+        margin: 0; padding: 0; width: 100vw; height: 100vh;
+        background-color: var(--bg-dark); color: var(--hrc-white);
+        font-family: 'Arial Black', sans-serif; overflow: hidden;
+        position: fixed; left: 0; top: 0;
+    }
+
+    canvas {
+        display: block; position: fixed; top: 0; left: 0;
+        width: 100vw !important; height: 100vh !important;
+        z-index: -1; pointer-events: none;
+    }
+
+    /* --- UI レイアウト：共通ベース --- */
+    .main-ui-container {
+        position: absolute; 
+        right: 15px; 
+        top: 0; /* 基点を上に固定 */
+        bottom: 50px;
+        display: flex; 
+        flex-direction: row; 
+        align-items: flex-start; 
+        gap: 25px; 
+        z-index: 20; 
+        pointer-events: none;
+    }
+
+    #info-overlay { 
+        display: flex; flex-direction: column; align-items: flex-end; text-align: right; 
+        /* justify-content: center; を削除して上に詰める */
+    }
+
+    #rpm_val { font-size: 11vh; font-weight: 900; line-height: 0.8; text-shadow: 3px 3px 10px #000; margin-bottom: 15px; }
+    #display1 { font-size: 17vh; letter-spacing: 1px; transform: scaleX(0.95); transform-origin: right; font-weight: 900; line-height: 0.8; color: var(--hrc-white); text-shadow: 4px 4px 15px #000; white-space: nowrap; display: inline-block; }
+    #display { font-size: 3.5vh; color: #bbb; text-shadow: 1px 1px 6px #000; margin-top: 5px; }
+
+    #lap-panel { width: 140px; height: 100%; display: flex; flex-direction: column; overflow: hidden; padding-top: 30px; }
+    #lap { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    #lap::-webkit-scrollbar { display: none; }
+    .lap-row { display: flex; justify-content: flex-end; gap: 15px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 16px; font-weight: 900; }
+    .best-lap { color: var(--hrc-red); }
+
+    .data-panel { display: flex; flex-direction: column; gap: 12px; width: 90px; padding-top: 30px; }
+    .data-box { display: flex; flex-direction: column; align-items: flex-end; }
+    .label { font-size: 10px; color: var(--hrc-red); font-weight: bold; }
+    .val { font-size: 32px; font-weight: 900; line-height: 0.9; }
+
+    footer { height: 45px; display: flex; gap: 4px; padding: 3px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
+    button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; height: 100%; pointer-events: auto; }
+
+    /* --- iPhone 8 専用レイアウト：すべてを上へ引き上げる --- */
+    @media screen and (max-width: 667px) and (orientation: landscape) {
+        .main-ui-container { top: 0 !important; height: 100% !important; }
         
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background-color: var(--bg-dark); color: var(--hrc-white); 
-            font-family: 'Arial Black', sans-serif; overflow: hidden; position: fixed; 
+        /* 右側（SPEED/MAX）：タコメーターのすぐ下(65px)へ */
+        .data-panel { 
+            position: absolute !important; 
+            right: 12px !important; 
+            top: 65px !important; 
+            padding-top: 0 !important;
+            gap: 4px !important; 
         }
-
-        #dashboard { 
-            position: relative; display: flex; flex-direction: column; 
-            height: 100dvh; width: 100vw; padding-top: 0; /* セーフエリアを無視 */
+        
+        /* 中央（ラップ履歴）：右パネルの横(110px地点)へ */
+        #lap-panel { 
+            position: absolute !important; 
+            right: 110px !important; 
+            top: 65px !important; 
+            padding-top: 0 !important;
+            width: 115px !important; 
         }
+        
+        .lap-row { font-size: 13px !important; padding: 4px 0 !important; }
 
-        #canvas { 
-            position: absolute; top: 0; left: 0; 
-            width: 100% !important; height: calc(100% - 60px) !important; z-index: 1; 
-        }
-
-        /* --- UI レイアウト：共通ベース --- */
-        .main-ui-container { 
-            position: absolute; right: 12px; top: 85px; 
-            display: flex; align-items: flex-start; gap: 15px; z-index: 20; pointer-events: auto; 
-        }
-
+        /* 左側（回転数/メインタイム）：履歴のさらに左へ。高さを20pxにして最上部へ */
         #info-overlay { 
-            display: flex; flex-direction: column; align-items: flex-end; 
-            text-align: right; gap: 0px; pointer-events: none;
+            position: absolute !important; 
+            right: 255px !important; 
+            top: 20px !important; /* ★ここを20pxにすることで、すべてのカラムの中で一番上に配置 */
+            justify-content: flex-start !important; 
         }
-
-        #rpm_val { font-size: 10vh; font-weight: 900; line-height: 0.7; margin-bottom: 5px; text-shadow: 3px 3px 12px #000; }
-        #display1 { font-size: 15vh; font-weight: 900; line-height: 0.8; color: var(--hrc-white); text-shadow: 4px 4px 15px #000; }
         
-        #sector-container { 
-            display: flex; flex-direction: row !important; justify-content: flex-end; 
-            gap: 8px; font-size: 2.5vh; font-weight: 900; width: 100%; white-space: nowrap; margin-top: 2px;
-        }
-        .sec-box { text-shadow: 2px 2px 10px #000; color: #fff; }
-        #display { font-size: 2.5vh; opacity: 0.8; margin-top: 2px; }
+        #rpm_val { font-size: 9vh !important; margin-bottom: 5px !important; }
+        #display1 { font-size: 18vh !important; }
+    }
 
-        .right-panels { display: flex; flex-direction: row; gap: 12px; align-items: flex-start; }
+    /* --- AQUOS：左側（回転数・ラップ）のみを下げる --- */
+    @media screen and (min-width: 400px) and (orientation: landscape) {
+        #display1, #rpm_val { transform: scaleX(1.0) !important; }
+        .val { font-size: 42px !important; } 
+        .label { font-size: 14px !important; } 
+        .lap-row { font-size: 20px !important; gap: 20px !important; } 
+        #lap-panel { width: 155px !important; padding-top: 30px !important; } 
+
+        /* AQUOSでは履歴等のトップ位置を維持しつつ、左側(info-overlay)だけを下げる */
+        #info-overlay { 
+            position: relative !important;
+            top: 0 !important;
+            right: auto !important;
+            margin-top: 85px !important; /* ★ここで左側だけを一段下げています */
+        }
         
-        #lap-panel { width: 110px; max-height: 55vh; display: flex; flex-direction: column; overflow: hidden; }
-        #lap { flex: 1; overflow-y: auto; scrollbar-width: none; }
-        #lap::-webkit-scrollbar { display: none; }
-        .lap-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; font-weight: 900; }
-        .best-lap { color: var(--hrc-red) !important; } 
-
-        .data-panel { display: flex; flex-direction: column; gap: 8px; width: 80px; }
-        .data-box { display: flex; flex-direction: column; align-items: flex-end; text-align: right; margin-bottom: 2px; }
-        .val { font-size: 30px; font-weight: 900; line-height: 0.8; text-shadow: 2px 2px 8px #000; }
-        .label { font-size: 10px; color: var(--hrc-red); font-weight: bold; margin-bottom: 2px; }
-
-        footer { height: 55px; display: flex; gap: 2px; padding: 4px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
-        button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 9px; font-weight: bold; min-width: 0; cursor: pointer; }
-
-        /* --- 【iPhone 8】絶対座標で強制固定（最優先） --- */
-        @media screen and (max-width: 667px) and (orientation: landscape) {
-            .main-ui-container { 
-                position: fixed !important; 
-                top: 0 !important; 
-                right: 0 !important; 
-                width: 100% !important; 
-                height: 0 !important; /* コンテナ自体を潰して子要素のみ配置 */
-                display: block !important; 
-            }
-            
-            /* 右側（履歴・SPEED）：右上を基点に配置 */
-            .right-panels { 
-                position: absolute !important; 
-                top: 38px !important; /* ★バーのすぐ下に貼り付け */
-                right: 8px !important; 
-                pointer-events: auto;
-            }
-            
-            /* 左側（回転数・ラップ）：高さを維持し、右パネルとの間に空白を作る */
-            #info-overlay { 
-                position: absolute !important; 
-                top: 52px !important; /* ★回転数は右側より少し低い位置を維持 */
-                right: 215px !important; /* ★ここを調整して「空白」の広さを決めています */
-                margin: 0 !important; 
-                pointer-events: none;
-            }
-
-            .data-panel { width: 75px !important; gap: 2px !important; }
-            .data-panel .val { font-size: 26px !important; }
-            #lap-panel { width: 105px !important; max-height: 200px !important; }
-            #display1 { font-size: 13.5vh !important; }
-            #rpm_val { font-size: 9.5vh !important; }
-        }
-
-        /* --- 【AQUOS】左側のみ下げ --- */
-        @media screen and (min-width: 400px) and (orientation: landscape) {
-            .main-ui-container { top: 110px !important; } 
-            #info-overlay { margin-top: 70px !important; margin-right: 50px !important; }
-            .data-panel { width: 110px !important; gap: 15px !important; }
-            .data-panel .val { font-size: 42px !important; } 
-            .data-panel .label { font-size: 13px !important; } 
-            .lap-row { font-size: 20px !important; gap: 15px !important; } 
-            #lap-panel { width: 160px !important; max-height: 55vh !important; } 
-            #sector-container { font-size: 3vh !important; gap: 15px !important; }
-        }
-    </style>
+        /* AQUOSでの重なり防止：info-overlayの右余白を調整 */
+        .main-ui-container { gap: 35px !important; }
+    }
+</style>
 </head>
 <body>
 
