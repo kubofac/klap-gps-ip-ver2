@@ -277,25 +277,84 @@ function mainLoop() {
 }
 
 function drawTacho(rpm) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const w = canvas.width, h = canvas.height, segments = 75, active = Math.floor((rpm / 14000) * segments);
-    const sX = 20, hY = 80, bY = h - 20, rad = bY - hY, curveEnd = 30;
+    const w = canvas.width = canvas.clientWidth;
+    const h = canvas.height = canvas.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+
+    const segments = 75;
+    const active = Math.floor((rpm / 14000) * segments);
+
+    // --- レスポンシブな配置計算 ---
+    // 画面の高さに応じて半径を調整 (iPhone 8でもはみ出さないサイズ)
+    const margin = 40; 
+    const rad = Math.min(w * 0.25, h * 0.55); // 半径を画面サイズに追従させる
+    const sX = 30; // 左端からの開始位置
+    const hY = 45; // 上端からのマージン
+    const bY = hY + rad; // カーブが終了し、直線が始まる高さ
+    const curveEnd = 30; // 75セグメント中、どこまでをカーブにするか
+
     for (let i = 0; i <= segments; i++) {
         let x, y, ang, prog;
-        if (i <= curveEnd) { prog = i/curveEnd; ang = Math.PI + (prog*(Math.PI/2)); x = sX+rad+Math.cos(ang)*rad; y = hY+rad+Math.sin(ang)*rad; }
-        else { prog = (i-curveEnd)/(segments-curveEnd); x = (sX+rad)+(prog*(w-15-(sX+rad))); y = hY; ang = 1.5*Math.PI; }
-        if (i % 10 === 0 || i === segments) {
-            ctx.save(); ctx.fillStyle = i < active ? "#fff" : "#444"; ctx.font = "italic bold 22px Arial";
-            ctx.textAlign = "center"; ctx.fillText(Math.round((i/segments)*14), x+Math.cos(ang)*45, y+Math.sin(ang)*45); ctx.restore();
+
+        if (i <= curveEnd) {
+            // 左側のカーブ部分 (9時方向から12時方向へ)
+            prog = i / curveEnd;
+            ang = Math.PI + (prog * (Math.PI / 2));
+            x = sX + rad + Math.cos(ang) * rad;
+            y = hY + rad + Math.sin(ang) * rad;
+        } else {
+            // 上部の直線部分 (左から右へ)
+            prog = (i - curveEnd) / (segments - curveEnd);
+            x = (sX + rad) + (prog * (w - (sX + rad) - margin));
+            y = hY;
+            ang = 1.5 * Math.PI;
         }
+
+        // 数字（スケール）の描画
+        if (i % 10 === 0 || i === segments) {
+            ctx.save();
+            ctx.fillStyle = i <= active ? "#fff" : "#444";
+            // 画面サイズに合わせてフォントサイズも微調整
+            const fontSize = Math.floor(h * 0.05);
+            ctx.font = `italic bold ${fontSize}px Arial`;
+            ctx.textAlign = "center";
+            // 数字をバーの外側に配置
+            const labelDist = 35;
+            ctx.fillText(
+                Math.round((i / segments) * 14), 
+                x + Math.cos(ang) * labelDist, 
+                y + Math.sin(ang) * labelDist
+            );
+            ctx.restore();
+        }
+
+        // バー本体の描画
         if (i < segments) {
-            let color = (i < active) ? (((i/segments)*14000 >= 12500) ? "var(--hrc-red)" : ((i/segments)*14000 >= 8000 ? "var(--hrc-blue)" : "#fff")) : "#222";
-            ctx.fillStyle = color; ctx.save(); ctx.translate(x, y); ctx.rotate(ang + Math.PI/2); ctx.fillRect(-5, -23, 10, 46); ctx.restore();
+            let color = "#222"; // デフォルト（未到達）
+            if (i < active) {
+                const currentRpmVal = (i / segments) * 14000;
+                if (currentRpmVal >= 12500) color = "var(--hrc-red)";
+                else if (currentRpmVal >= 8000) color = "var(--hrc-blue)";
+                else color = "#fff";
+            }
+
+            ctx.fillStyle = color;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(ang + Math.PI / 2);
+            
+            // バーの太さを画面の高さに合わせる
+            const barW = Math.max(4, w * 0.012);
+            const barH = Math.max(20, h * 0.12);
+            ctx.fillRect(-barW / 2, -barH / 2, barW, barH);
+            ctx.restore();
         }
     }
+
+    // 数値表示の更新
     document.getElementById('rpm_val').textContent = Math.floor(rpm);
     document.getElementById('speed_val').textContent = Math.round(currentSpeedKmh);
-    document.getElementById('max_speed_val').textContent = maxSpeedInLap;
+    document.getElementById('max_speed_val').textContent = Math.round(maxSpeedInLap);
 }
 
 document.getElementById('intGpsBtn').onclick = toggleInternalGps;
