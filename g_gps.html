@@ -45,61 +45,58 @@
        /* iPhone 8 (375px) 以下：右端ゼロ距離・右揃え強制 */
 /* iPhone 8 (375px) 以下専用：詳細度を極限まで高めた強制右寄せ */
 /* iPhone 8 横画面 (width: 667px / height: 375px) 専用の設定 */
+/* iPhone 8 横画面 (667px) 専用：3桁表示の完全最適化 */
 @media screen and (max-width: 667px) and (orientation: landscape) {
-    /* 1. コンテナを右端 0 に固定し、中身を右側に寄せる */
+    
+    /* 1. 全体コンテナ：右端に吸着 */
     .main-ui-container {
         right: 0px !important;
         width: auto !important;
-        max-width: 100% !important;
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: flex-end !important; /* ★全体を右に寄せる */
-        align-items: flex-end !important;
-        padding-right: env(safe-area-inset-right) !important; /* iPhoneのノッチ/角丸対策 */
-        gap: 10px !important; /* 各カラム間の隙間を詰め、左側のはみ出しを防止 */
+        justify-content: flex-end !important;
+        padding-right: env(safe-area-inset-right) !important;
+        gap: 10px !important;
     }
 
-    /* 2. SPEEDパネル：箱の幅を絞り、中身を「右揃え」に強制 */
+    /* 2. SPEEDパネル：3桁(100〜199)が余裕を持って収まる90px幅 */
     .data-panel {
-        width: 80px !important;      /* 箱の幅をスリム化 */
+        width: 90px !important;
+        min-width: 90px !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: flex-end !important; /* ★中身を右端に寄せる */
+        align-items: flex-end !important; /* ★右端揃えを強制 */
         margin: 0 !important;
     }
 
-    /* 3. SPEEDラベルと数値のボックス */
+    /* 3. 各データ項目：SPEEDやMAXの箱 */
     .data-box {
         width: 100% !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: flex-end !important; /* ★ラベルも数値も右揃え */
-        margin-bottom: 5px !important;
+        align-items: flex-end !important; /* ★中身を右寄せ */
+        margin-bottom: 8px !important;
     }
 
-    /* 4. 数値とラベルを右端の1ピクセルまで寄せる */
+    /* 4. 数値：右詰めを維持し、3桁でも崩れない設定 */
     .val {
-        font-size: 35px !important;  /* 横画面なので少し見やすく調整 */
-        text-align: right !important; /* ★数字を右寄せ */
+        font-size: 38px !important;
+        text-align: right !important; /* ★右寄せ：桁が増えても右端は不動 */
         width: 100% !important;
-        padding-right: 5px !important;
+        letter-spacing: -1px !important; /* 数字の間隔を詰め、3桁でもシャープに */
+        line-height: 1.0 !important;
+        padding-right: 4px !important;
     }
 
+    /* 5. ラベル：SPEEDの文字を数値の右端に合わせる */
     .label {
         font-size: 10px !important;
-        text-align: right !important; /* ★ラベル(SPEED)を右寄せ */
+        text-align: right !important;
         width: 100% !important;
-        padding-right: 5px !important;
+        padding-right: 4px !important;
     }
 
-    /* 5. 一番左のラップタイムが画面外へ出ないよう調整 */
-    #info-overlay {
-        flex: 1 !important;
-        min-width: 0 !important;
-    }
-
+    /* 6. 左側のラップタイム：画面内に収まるようサイズ調整 */
     #display1 {
-        font-size: 14vh !important;  /* 横画面(高さ375px)に合わせてサイズ調整 */
+        font-size: 14vh !important;
         text-align: right !important;
     }
 }
