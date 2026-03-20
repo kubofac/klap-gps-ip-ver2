@@ -8,7 +8,8 @@
       <link rel="manifest" href="/manifest.json"> 
 <style>
         :root { --hrc-red: #E4002B; --hrc-white: #ffffff; --bg-dark: #000000; --hrc-orange: #FFA500; --hrc-blue: #004098; }
-                body, html { 
+        
+        body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background-color: var(--bg-dark); color: var(--hrc-white); 
             font-family: 'Arial Black', sans-serif; overflow: hidden; position: fixed; 
@@ -16,7 +17,7 @@
 
         #dashboard { 
             position: relative; display: flex; flex-direction: column; 
-            height: 100dvh; width: 100vw; padding-top: env(safe-area-inset-top); 
+            height: 100dvh; width: 100vw; padding-top: 0; /* セーフエリアを無視 */
         }
 
         #canvas { 
@@ -32,7 +33,7 @@
 
         #info-overlay { 
             display: flex; flex-direction: column; align-items: flex-end; 
-            text-align: right; gap: 0px; pointer-events: none; margin-right: 25px; 
+            text-align: right; gap: 0px; pointer-events: none;
         }
 
         #rpm_val { font-size: 10vh; font-weight: 900; line-height: 0.7; margin-bottom: 5px; text-shadow: 3px 3px 12px #000; }
@@ -61,45 +62,45 @@
         footer { height: 55px; display: flex; gap: 2px; padding: 4px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
         button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 9px; font-weight: bold; min-width: 0; cursor: pointer; }
 
-        /* --- 【iPhone 8】画面上端を基準にすべてを再配置 --- */
+        /* --- 【iPhone 8】絶対座標で強制固定（最優先） --- */
         @media screen and (max-width: 667px) and (orientation: landscape) {
-            /* 親コンテナを画面上端に固定し、高さを最小限に */
             .main-ui-container { 
+                position: fixed !important; 
                 top: 0 !important; 
-                right: 8px !important; 
-                height: 1px !important; /* コンテナが下に伸びるのを防ぐ */
-                display: block !important; /* flexを解除して絶対配置の子要素を制御 */
+                right: 0 !important; 
+                width: 100% !important; 
+                height: 0 !important; /* コンテナ自体を潰して子要素のみ配置 */
+                display: block !important; 
             }
             
-            /* 右側（履歴・SPEED）：上から45pxの位置に強制固定 */
+            /* 右側（履歴・SPEED）：右上を基点に配置 */
             .right-panels { 
                 position: absolute !important; 
-                top: 45px !important; 
-                right: 0px !important; 
-                display: flex !important;
+                top: 38px !important; /* ★バーのすぐ下に貼り付け */
+                right: 8px !important; 
                 pointer-events: auto;
             }
             
-            /* 左側（回転数・ラップ）：上から60pxの位置に強制固定 */
+            /* 左側（回転数・ラップ）：高さを維持し、右パネルとの間に空白を作る */
             #info-overlay { 
                 position: absolute !important; 
-                top: 60px !important; 
-                right: 210px !important; /* 空白を詰め、右パネルとの距離を適正に */
+                top: 52px !important; /* ★回転数は右側より少し低い位置を維持 */
+                right: 215px !important; /* ★ここを調整して「空白」の広さを決めています */
                 margin: 0 !important; 
                 pointer-events: none;
             }
 
-            .data-panel { width: 75px !important; gap: 1px !important; }
+            .data-panel { width: 75px !important; gap: 2px !important; }
             .data-panel .val { font-size: 26px !important; }
             #lap-panel { width: 105px !important; max-height: 200px !important; }
             #display1 { font-size: 13.5vh !important; }
             #rpm_val { font-size: 9.5vh !important; }
         }
 
-        /* --- 【AQUOS】左側のみ下げ（iPhoneに影響なし） --- */
+        /* --- 【AQUOS】左側のみ下げ --- */
         @media screen and (min-width: 400px) and (orientation: landscape) {
             .main-ui-container { top: 110px !important; } 
-            #info-overlay { margin-top: 75px !important; margin-right: 50px !important; }
+            #info-overlay { margin-top: 70px !important; margin-right: 50px !important; }
             .data-panel { width: 110px !important; gap: 15px !important; }
             .data-panel .val { font-size: 42px !important; } 
             .data-panel .label { font-size: 13px !important; } 
