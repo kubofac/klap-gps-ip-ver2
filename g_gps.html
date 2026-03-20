@@ -43,74 +43,63 @@
         #history-table td { padding: 8px; border-bottom: 1px solid #333; text-align: center; }
         .close-btn { background: var(--hrc-red); padding: 15px; text-align: center; font-weight: bold; border-radius: 4px; cursor: pointer; }
         /* iPhone 8 (375px) 以下の端末専用の調整 */
-/* iPhone 8 (375px) 以下の端末専用：右余白の完全撤廃 */
-/* iPhone 8 (375px) 以下の端末専用：右余白と左はみ出しの完全解消 */
-/* iPhone 8 (375px) 以下の端末専用：右端吸着と数値右寄せの完全解消 */
+/* iPhone 8 (375px) 以下の端末専用：右寄せの最終解決 */
 @media screen and (max-width: 375px) {
-    /* 1. コンテナ：右端 0px に固定し、中身を右基準で並べる */
+    /* 1. 全体コンテナを右端 0 に固定 */
     .main-ui-container {
-        right: 0px !important;       /* 右の隙間を物理的にゼロにする */
-        width: 100% !important;      /* 画面幅いっぱいを使い切る */
-        gap: 8px !important;         /* カラム間の隙間を凝縮 */
-        justify-content: flex-end !important; /* ★中身を右側に寄せる */
-        padding-right: 5px !important; /* 画面端との微調整 */
+        right: 0px !important;       /* 画面右端の隙間をゼロに */
+        gap: 6px !important;         /* カラム間を詰め、左へのはみ出しを防止 */
+        justify-content: flex-end !important; 
         align-items: flex-end !important;
+        width: auto !important;
+        padding-right: 2px !important; /* 画面の端スレスレに設定 */
     }
 
-    /* 2. SPEEDパネル：幅をスリムにし、中身を「右揃え」に強制 */
+    /* 2. SPEEDパネル：内部を強制的に右揃えにする */
     .data-panel {
-        width: 75px !important;      /* 110pxから75pxへ（iPhone 8の限界幅） */
-        min-width: 75px !important;
-        margin: 0 !important;
+        width: 80px !important;      /* 3桁分(約80px)の幅を確保 */
+        min-width: 80px !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: flex-end !important; /* ★パネル内の要素を右に寄せる */
+        align-items: flex-end !important; /* ★中身を右側に寄せる */
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
+    /* 3. 個別のデータ項目（SPEEDやMAX）の箱 */
     .data-box {
         width: 100% !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: flex-end !important; /* ★数値もラベルも右に寄せる */
+        align-items: flex-end !important; /* ★ここが重要：ラベルも数値も右寄せ */
+        margin-bottom: 10px;
     }
 
+    /* 4. 数値（0など）：右寄せにし、右側の余白を排除 */
     .val {
-        font-size: 32px !important;  /* 40pxから少しスリム化 */
-        text-align: right !important; /* ★数値を右寄せ（これで左側に空きができる） */
+        font-size: 32px !important;
+        text-align: right !important; /* ★数値を右端に吸着 */
         width: 100% !important;
-        padding-right: 2px;          /* 端に寄りすぎない微調整 */
+        margin-right: 0 !important;   /* 右の隙間を消す */
+        padding-right: 0 !important;
+        line-height: 0.9 !important;
     }
 
+    /* 5. ラベル（SPEEDなど）：右寄せ */
     .label {
         font-size: 9px !important;
-        text-align: right !important; /* ラベルも右寄せ */
+        text-align: right !important; /* ★ラベルも右端に吸着 */
         width: 100% !important;
-        color: var(--hrc-red);
+        margin-right: 0 !important;
+        padding-right: 0 !important;
     }
 
-    /* 3. 真ん中：ラップ履歴パネルをダイエットさせ、左側のスペースを確保 */
-    #lap-panel {
-        width: 95px !important;      /* 175pxから縮小 */
-        min-width: 95px !important;
-    }
-
-    /* 4. 一番左：ラップタイム表示（はみ出しの主因）を画面内に戻す */
-    #info-overlay {
-        flex: 1 !important;
-        min-width: 0 !important;
-        align-items: flex-end !important; /* 全体を右基準にする */
-    }
-
+    /* 6. ラップタイム（一番左）のサイズを下げて、画面内に引き戻す */
     #display1 {
-        font-size: 11vh !important;  /* 18vhから大幅カット */
-        text-align: right !important;
-        white-space: nowrap !important;
-    }
-
-    #rpm_val {
-        font-size: 9vh !important;
+        font-size: 11vh !important;  /* 18vhから縮小 */
         text-align: right !important;
     }
+    #lap-panel { width: 100px !important; }
 }
     </style>
 </head>
