@@ -69,30 +69,30 @@
         footer { height: 55px; display: flex; gap: 2px; padding: 4px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
         button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 9px; font-weight: bold; min-width: 0; cursor: pointer; }
 
-        /* --- 【重要】iPhone 8 横画面：個別配置で追い込み --- */
+        /* --- iPhone 8 横画面：独立配置の追い込み --- */
         @media screen and (max-width: 667px) and (orientation: landscape) {
             .main-ui-container { top: 0 !important; right: 8px !important; height: 100%; width: 100%; pointer-events: none; }
             
-            /* 右側（履歴・SPEED）を上に持ち上げる */
+            /* 右側（履歴・SPEED）を限界まで上に配置 */
             .right-panels { 
                 position: absolute !important; 
                 right: 0px !important; 
-                top: 62px !important; /* ★バーのすぐ下まで上げました */
+                top: 52px !important; /* ★バーのすぐ下までさらに上げました（以前の数値より10pxアップ） */
                 pointer-events: auto;
             }
             .data-panel { width: 75px !important; gap: 4px !important; }
             .data-panel .val { font-size: 26px !important; }
-            #lap-panel { width: 105px !important; max-height: 180px !important; }
+            #lap-panel { width: 105px !important; max-height: 195px !important; }
 
-            /* 左側（回転数・ラップ）を下に下げる */
+            /* 左側（回転数・ラップ）をバーから少し下げて視認性確保 */
             #info-overlay { 
                 position: absolute !important; 
-                right: 210px !important; /* 履歴との重なり回避距離 */
-                top: 95px !important;   /* ★バーから離して下げました */
+                right: 215px !important; 
+                top: 80px !important;   /* ★バーとの重なりを避け、少しだけ上げました（以前の数値より調整） */
                 pointer-events: none;
             }
-            #display1 { font-size: 13vh !important; }
-            #rpm_val { font-size: 9vh !important; }
+            #display1 { font-size: 13.5vh !important; }
+            #rpm_val { font-size: 9.5vh !important; }
         }
 
         /* --- AQUOS専用：全体を下げて拡大 --- */
