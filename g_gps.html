@@ -45,25 +45,26 @@
         /* iPhone 8 (375px) 以下の端末専用の調整 */
 /* iPhone 8 (375px) 以下の端末専用：右端の余白を物理的に抹殺する */
 @media screen and (max-width: 375px) {
-    /* 1. コンテナ自体を右の壁に「0」で吸着させる */
+    /* 1. 全体コンテナを画面の右の壁に「0」で叩きつける */
     .main-ui-container {
-        right: 0px !important;       /* 10pxなどの遊びを一切排除 */
+        right: 0px !important;       /* 10pxなどの遊びを完全に排除 */
         left: auto !important;
         width: 100% !important;      /* 画面全幅を使い切る */
-        gap: 4px !important;         /* カラム間を極限まで詰め、左側のはみ出しを抑制 */
+        gap: 5px !important;         /* カラム間を極限まで詰め、左側のはみ出しを抑制 */
         justify-content: flex-end !important; /* ★中身を右に寄せる */
         padding-right: 0px !important; 
     }
 
-    /* 2. SPEEDパネル：内部の並び順を「右基準」に完全固定 */
+    /* 2. SPEEDパネル：箱の幅を「3桁分」の最小サイズに削る */
     .data-panel {
-        width: 80px !important;      /* 3桁分(約80px)の「右端スロット」を作成 */
+        /* 110pxだと右に余白が出るため、80pxまでダイエット */
+        width: 80px !important;      
         min-width: 80px !important;
         margin: 0 !important;
         padding: 0 !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: flex-end !important; /* ★中の要素を右の壁に強制的に寄せる */
+        align-items: flex-end !important; /* ★中の要素を右の壁に強制吸着 */
     }
 
     /* 3. SPEED / MAX などの各項目を保持する箱 */
@@ -71,10 +72,9 @@
         width: 100% !important;
         display: flex !important;
         flex-direction: column !important;
-        /* ★重要：ここを flex-end にすることで、ラベルも数値も右端に揃います */
-        align-items: flex-end !important; 
+        align-items: flex-end !important; /* ★ラベルも数値も右端に揃える */
         margin-bottom: 8px !important;
-        padding-right: 4px !important;    /* 画面端との最低限の隙間 */
+        padding-right: 5px !important;    /* 画面端との衝突を防ぐ最小限の隙間 */
     }
 
     /* 4. 数値（0など）：右寄せにし、右側の隙間を1pxも残さない */
@@ -84,26 +84,26 @@
         width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
-        display: block !important;    /* 文字の配置を確実にする */
+        display: block !important;
     }
 
     /* 5. ラベル（SPEEDなど）：右寄せにし、数値の右端とラインを合わせる */
     .label {
         font-size: 9px !important;
-        text-align: right !important; /* ★ラベルの末尾を右端に吸着 */
+        text-align: right !important; /* ★ラベルの末尾(Dの字)を右端に吸着 */
         width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
         display: block !important;
     }
 
-    /* 6. ラップタイム（一番左）のサイズを下げて、画面内に引き戻す */
+    /* 6. ラップタイム（一番左）：サイズを下げて、画面内に引き戻す */
     #display1 {
-        font-size: 11vh !important;
+        font-size: 11vh !important;  /* 18vhだと左に突き抜けるため縮小 */
         text-align: right !important;
     }
     #lap-panel {
-        width: 95px !important;
+        width: 100px !important;     /* 履歴パネルもスリム化 */
     }
 }
     </style>
