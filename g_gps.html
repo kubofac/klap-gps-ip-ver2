@@ -5,42 +5,210 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>KLAP DEGI ULTIMATE V2 - INT GPS</title>
-     <link rel="manifest" href="/manifest.json">
-    <style>
-        :root { --hrc-red: #E4002B; --hrc-white: #ffffff; --bg-dark: #000000; --hrc-orange: #FFA500; --hrc-blue: #004098; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg-dark); color: var(--hrc-white); font-family: 'Arial Black', sans-serif; overflow: hidden; position: fixed; }
-        #dashboard { position: relative; display: flex; flex-direction: column; height: 100dvh; width: 100vw; padding-top: env(safe-area-inset-top); }
-        #canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: calc(100% - 60px) !important; z-index: 1; }
+ <style>
+        :root { 
+            --hrc-red: #E4002B; 
+            --hrc-white: #ffffff; 
+            --bg-dark: #000000; 
+            --hrc-orange: #FFA500; 
+            --hrc-blue: #004098; 
+        }
 
-        /* UI Layout from V10.6.1 */
-        .main-ui-container { position: absolute; right: 10px; top: 120px; bottom: 70px; display: flex; align-items: flex-start; gap: 45px; z-index: 20; pointer-events: auto; }
-        #info-overlay { display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 10px; pointer-events: none; }
-        #rpm_val { font-size: 13vh; font-weight: 900; line-height: 0.8; margin-top: 10px; text-shadow: 3px 3px 12px #000; }
-        #display1 { font-size: 18vh; font-weight: 900; line-height: 0.9; color: var(--hrc-white); text-shadow: 4px 4px 15px #000; }
-        
-        #sector-container { display: flex; justify-content: flex-end; gap: 15px; font-size: 3vh; font-weight: 900; height: 3.5vh; }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background-color: var(--bg-dark); color: var(--hrc-white); 
+            font-family: 'Arial Black', sans-serif; overflow: hidden; position: fixed; 
+        }
+
+        #dashboard { 
+            position: relative; display: flex; flex-direction: column; 
+            height: 100dvh; width: 100vw; padding-top: env(safe-area-inset-top); 
+        }
+
+        #canvas { 
+            position: absolute; top: 0; left: 0; width: 100% !important; 
+            height: calc(100% - 60px) !important; z-index: 1; 
+        }
+
+        /* --- メインUIレイアウト --- */
+        .main-ui-container { 
+            position: absolute; 
+            right: 15px; 
+            top: 65px;   /* 右側パネル（SPEED/LAP履歴）の基準高さ */
+            bottom: 70px; 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 25px; 
+            z-index: 20; 
+            pointer-events: auto; 
+        }
+
+        /* ★左側ブロック：回転数数値とタイム表示（さらに下にオフセット）★ */
+        #info-overlay { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-end; 
+            text-align: right; 
+            gap: 5px; 
+            pointer-events: none; 
+            margin-top: 80px; /* 前回の55pxから80pxへ増やし、さらに下げました */
+        }
+
+        #rpm_val { 
+            font-size: 13vh; 
+            font-weight: 900; 
+            line-height: 0.8; 
+            text-shadow: 3px 3px 12px #000; 
+        }
+
+        #display1 { 
+            font-size: 18vh; 
+            font-weight: 900; 
+            line-height: 0.9; 
+            color: var(--hrc-white); 
+            text-shadow: 4px 4px 15px #000; 
+        }
+
+        /* セクター表示（メインタイムに連動） */
+        #sector-container { 
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 15px; 
+            font-size: 3vh; 
+            font-weight: 900; 
+            height: 3.5vh; 
+        }
         .sec-box { display: none; text-shadow: 2px 2px 10px #000; color: #fff; }
-        .right-panels { display: flex; flex-direction: row; gap: 15px; height: 100%; align-items: flex-start; }
-        #lap-panel { width: 175px; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+
+        #display { font-size: 2.5vh; opacity: 0.8; }
+
+        /* 右側パネル（LAP履歴とSPEED枠は高さを維持） */
+        .right-panels { 
+            display: flex; 
+            flex-direction: row; 
+            gap: 15px; 
+            height: 100%; 
+            align-items: flex-start; 
+        }
+
+        #lap-panel { 
+            width: 150px; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+        }
         #lap { flex: 1; overflow-y: auto; scrollbar-width: none; }
         #lap::-webkit-scrollbar { display: none; }
-        .lap-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 18px; font-weight: 900; }
+        .lap-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 6px 0; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            font-size: 16px; 
+            font-weight: 900; 
+        }
         .best-lap { color: var(--hrc-red) !important; } 
 
-        .data-panel { display: flex; flex-direction: column; gap: 15px; width: 110px; }
-        .val { font-size: 40px; font-weight: 900; line-height: 0.9; text-shadow: 2px 2px 8px #000; }
-        .label { font-size: 11px; color: var(--hrc-red); font-weight: bold; }
+        .data-panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            width: 100px; 
+            align-items: flex-end; 
+        }
+        .data-box { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-end; 
+            text-align: right; 
+            width: 100%;
+        }
+        .label { font-size: 10px; color: var(--hrc-red); font-weight: bold; letter-spacing: 1px; }
+        .val { 
+            font-size: 38px; 
+            font-weight: 900; 
+            line-height: 0.8; 
+            text-shadow: 2px 2px 8px #000; 
+        }
 
-        footer { height: 55px; display: flex; gap: 2px; padding: 4px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
-        button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 9px; font-weight: bold; min-width: 0; cursor: pointer; }
+        footer { 
+            height: 55px; 
+            display: flex; 
+            gap: 2px; 
+            padding: 4px; 
+            background: #000; 
+            border-top: 1px solid #333; 
+            z-index: 100; 
+            position: fixed; 
+            bottom: 0; left: 0; right: 0; 
+            padding-bottom: env(safe-area-inset-bottom); 
+        }
+        button { 
+            flex: 1; 
+            background: #1a1a1a; 
+            color: #fff; 
+            border: 1px solid #444; 
+            border-radius: 4px; 
+            font-size: 9px; 
+            font-weight: bold; 
+            min-width: 0; 
+            cursor: pointer; 
+        }
         button.active { background: var(--hrc-red) !important; }
 
-        /* History Page from V10.6.1 */
-        #history-page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        #history-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 20px; }
-        #history-table th { color: var(--hrc-red); border-bottom: 2px solid var(--hrc-red); padding: 8px; text-align: center; }
-        #history-table td { padding: 8px; border-bottom: 1px solid #333; text-align: center; }
-        .close-btn { background: var(--hrc-red); padding: 15px; text-align: center; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        /* --- iPhone 8 / AQUOS sense5G 等の横長画面用 --- */
+        @media screen and (max-height: 400px) {
+            .main-ui-container { 
+                top: 55px !important; 
+            }
+            #info-overlay {
+                margin-top: 65px !important; /* 低い画面でも被らない限界値に調整 */
+            }
+            #rpm_val { font-size: 12vh !important; }
+            #display1 { font-size: 16vh !important; }
+            .val { font-size: 34px !important; }
+            #lap-panel { width: 130px !important; }
+        }
+
+        /* 履歴表示 */
+        #history-page { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.96); 
+            z-index: 2000; 
+            padding: 20px; 
+            box-sizing: border-box; 
+            overflow-y: auto; 
+        }
+        #history-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 13px; 
+            margin-top: 20px; 
+        }
+        #history-table th { 
+            color: var(--hrc-red); 
+            border-bottom: 2px solid var(--hrc-red); 
+            padding: 8px; 
+            text-align: center; 
+        }
+        #history-table td { 
+            padding: 8px; 
+            border-bottom: 1px solid #333; 
+            text-align: center; 
+        }
+        .close-btn { 
+            background: var(--hrc-red); 
+            color: white; 
+            padding: 15px; 
+            text-align: center; 
+            font-weight: bold; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
     </style>
 </head>
 <body>
