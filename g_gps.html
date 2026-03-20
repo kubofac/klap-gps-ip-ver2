@@ -284,42 +284,42 @@ function drawTacho(rpm) {
     const segments = 75;
     const active = Math.floor((rpm / 14000) * segments);
 
-    // --- レスポンシブな配置計算 ---
-    // 画面の高さに応じて半径を調整 (iPhone 8でもはみ出さないサイズ)
-    const margin = 40; 
-    const rad = Math.min(w * 0.25, h * 0.55); // 半径を画面サイズに追従させる
-    const sX = 30; // 左端からの開始位置
-    const hY = 45; // 上端からのマージン
-    const bY = hY + rad; // カーブが終了し、直線が始まる高さ
-    const curveEnd = 30; // 75セグメント中、どこまでをカーブにするか
+    // --- 画面左下から立ち上げるための計算 ---
+    const sX = 25;           // 左端からのマージン
+    const hY = 40;           // 上部の直線の高さ（上端からの距離）
+    const bY = h - 10;       // 下部の開始地点（下端からの距離）
+    
+    // 半径を「下の開始点」と「上の直線」の差分で決定する
+    const rad = bY - hY;     
+    const curveEnd = 30;     // 全75セグメント中、30番目までをカーブにする
+    const rightMargin = 40;  // 右端のスピードメーター等との余白
 
     for (let i = 0; i <= segments; i++) {
         let x, y, ang, prog;
 
         if (i <= curveEnd) {
-            // 左側のカーブ部分 (9時方向から12時方向へ)
+            // 左下から左上へ向かうカーブ（9時方向から12時方向）
             prog = i / curveEnd;
             ang = Math.PI + (prog * (Math.PI / 2));
             x = sX + rad + Math.cos(ang) * rad;
-            y = hY + rad + Math.sin(ang) * rad;
+            y = bY + Math.sin(ang) * rad; // bY(下)を基準に回転
         } else {
-            // 上部の直線部分 (左から右へ)
+            // 上部の水平直線（左から右へ）
             prog = (i - curveEnd) / (segments - curveEnd);
-            x = (sX + rad) + (prog * (w - (sX + rad) - margin));
+            x = (sX + rad) + (prog * (w - (sX + rad) - rightMargin));
             y = hY;
             ang = 1.5 * Math.PI;
         }
 
-        // 数字（スケール）の描画
+        // スケール数字の描画
         if (i % 10 === 0 || i === segments) {
             ctx.save();
             ctx.fillStyle = i <= active ? "#fff" : "#444";
-            // 画面サイズに合わせてフォントサイズも微調整
-            const fontSize = Math.floor(h * 0.05);
+            const fontSize = Math.max(12, Math.floor(h * 0.05));
             ctx.font = `italic bold ${fontSize}px Arial`;
             ctx.textAlign = "center";
-            // 数字をバーの外側に配置
-            const labelDist = 35;
+            // 数字をバーの外側に配置（カーブ中は斜め、直線中は真上）
+            const labelDist = 38;
             ctx.fillText(
                 Math.round((i / segments) * 14), 
                 x + Math.cos(ang) * labelDist, 
@@ -330,7 +330,7 @@ function drawTacho(rpm) {
 
         // バー本体の描画
         if (i < segments) {
-            let color = "#222"; // デフォルト（未到達）
+            let color = "#222";
             if (i < active) {
                 const currentRpmVal = (i / segments) * 14000;
                 if (currentRpmVal >= 12500) color = "var(--hrc-red)";
@@ -343,15 +343,15 @@ function drawTacho(rpm) {
             ctx.translate(x, y);
             ctx.rotate(ang + Math.PI / 2);
             
-            // バーの太さを画面の高さに合わせる
+            // バーのサイズ調整
             const barW = Math.max(4, w * 0.012);
-            const barH = Math.max(20, h * 0.12);
+            const barH = Math.max(25, h * 0.12);
             ctx.fillRect(-barW / 2, -barH / 2, barW, barH);
             ctx.restore();
         }
     }
 
-    // 数値表示の更新
+    // 各種数値の更新
     document.getElementById('rpm_val').textContent = Math.floor(rpm);
     document.getElementById('speed_val').textContent = Math.round(currentSpeedKmh);
     document.getElementById('max_speed_val').textContent = Math.round(maxSpeedInLap);
