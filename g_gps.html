@@ -27,20 +27,13 @@
 
         /* --- UI レイアウト：共通ベース --- */
         .main-ui-container { 
-            position: absolute; 
-            right: 12px; 
-            top: 85px; 
-            display: flex; 
-            align-items: flex-start; 
-            gap: 15px; 
-            z-index: 20; 
-            pointer-events: auto; 
+            position: absolute; right: 12px; top: 85px; 
+            display: flex; align-items: flex-start; gap: 15px; z-index: 20; pointer-events: auto; 
         }
 
         #info-overlay { 
             display: flex; flex-direction: column; align-items: flex-end; 
-            text-align: right; gap: 0px; pointer-events: none;
-            margin-right: 25px; /* AQUOS/共通：ラップと履歴の間の空白 */
+            text-align: right; gap: 0px; pointer-events: none; margin-right: 25px; 
         }
 
         #rpm_val { font-size: 10vh; font-weight: 900; line-height: 0.7; margin-bottom: 5px; text-shadow: 3px 3px 12px #000; }
@@ -69,33 +62,33 @@
         footer { height: 55px; display: flex; gap: 2px; padding: 4px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
         button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 9px; font-weight: bold; min-width: 0; cursor: pointer; }
 
-        /* --- 【修正】iPhone 8 横画面：全体を上に詰め、余白を確保 --- */
+        /* --- 【修正】iPhone 8 横画面：右側を限界まで上げ、左を離す --- */
         @media screen and (max-width: 667px) and (orientation: landscape) {
             .main-ui-container { top: 0 !important; right: 10px !important; height: 100%; width: 100%; pointer-events: none; }
             
-            /* 右側（履歴・SPEED）を限界まで上へ */
+            /* 1. ラップ履歴・SPEEDを限界まで上に詰め（48px -> 42px） */
             .right-panels { 
                 position: absolute !important; 
                 right: 0px !important; 
-                top: 48px !important; /* ★バーの直下まで上げ */
+                top: 42px !important; 
                 pointer-events: auto;
             }
             .data-panel { width: 75px !important; gap: 4px !important; }
             .data-panel .val { font-size: 26px !important; }
-            #lap-panel { width: 105px !important; max-height: 200px !important; }
+            #lap-panel { width: 105px !important; max-height: 210px !important; }
 
-            /* 左側（回転数・ラップ）も上へ上げつつ、右側との間に空間を作る */
+            /* 2. 回転数・ラップの高さを維持（55px）しつつ、左へ大きくスライド（215px -> 250px） */
             #info-overlay { 
                 position: absolute !important; 
-                right: 215px !important; /* ★履歴パネルとの間の「空白」を215pxで確保 */
-                top: 55px !important;   /* ★回転数もバーの近くまで上げました */
+                right: 250px !important; /* ★ここを増やすことで履歴との間に空白を作ります */
+                top: 55px !important;   /* ★高さは現状を維持 */
                 pointer-events: none;
             }
             #display1 { font-size: 13.5vh !important; }
             #rpm_val { font-size: 9.5vh !important; }
         }
 
-        /* --- AQUOS専用：全体を下げて拡大 --- */
+        /* --- AQUOS専用：変更なし --- */
         @media screen and (min-width: 400px) and (orientation: landscape) {
             .main-ui-container { top: 110px !important; } 
             .data-panel { width: 110px !important; gap: 15px !important; }
@@ -103,7 +96,7 @@
             .data-panel .label { font-size: 13px !important; } 
             .lap-row { font-size: 20px !important; gap: 15px !important; } 
             #lap-panel { width: 160px !important; max-height: 55vh !important; } 
-            #info-overlay { margin-right: 45px !important; } /* ラップと履歴の空間を広めに */
+            #info-overlay { margin-right: 45px !important; }
             #sector-container { font-size: 3vh !important; gap: 15px !important; }
         }
 
