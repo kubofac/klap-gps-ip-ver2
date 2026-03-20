@@ -62,41 +62,33 @@
         footer { height: 55px; display: flex; gap: 2px; padding: 4px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
         button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 9px; font-weight: bold; min-width: 0; cursor: pointer; }
 
-        /* --- 【修正】iPhone 8 横画面：空白を少し詰めて最適化 --- */
+        /* --- iPhone 8 横画面：変更なし --- */
         @media screen and (max-width: 667px) and (orientation: landscape) {
             .main-ui-container { top: 0 !important; right: 8px !important; height: 100%; width: 100%; pointer-events: none; }
-            
-            /* 右側：上部限界位置を維持 */
-            .right-panels { 
-                position: absolute !important; 
-                right: 0px !important; 
-                top: -15px !important; 
-                pointer-events: auto;
-            }
+            .right-panels { position: absolute !important; right: 0px !important; top: -15px !important; pointer-events: auto; }
             .data-panel { width: 75px !important; gap: 1px !important; }
             .data-panel .val { font-size: 26px !important; }
             #lap-panel { width: 105px !important; max-height: 230px !important; }
-
-            /* 左側：空白を少し詰める (310px -> 265px) */
-            #info-overlay { 
-                position: absolute !important; 
-                right: 265px !important; /* ★ここを少し減らして履歴に近づけました */
-                top: 55px !important;   /* 高さは維持 */
-                pointer-events: none;
-            }
+            #info-overlay { position: absolute !important; right: 265px !important; top: 55px !important; pointer-events: none; }
             #display1 { font-size: 13.5vh !important; }
             #rpm_val { font-size: 9.5vh !important; }
         }
 
-        /* --- AQUOS専用 --- */
+        /* --- 【修正】AQUOS専用：回転数／ラップのみをさらに下げる --- */
         @media screen and (min-width: 400px) and (orientation: landscape) {
             .main-ui-container { top: 110px !important; } 
+            
+            /* 左側：margin-topを追加して右パネルより低く配置 */
+            #info-overlay { 
+                margin-top: 40px !important; /* ★ここを増やすと回転数／ラップがさらに下がります */
+                margin-right: 50px !important; 
+            }
+
             .data-panel { width: 110px !important; gap: 15px !important; }
             .data-panel .val { font-size: 42px !important; } 
             .data-panel .label { font-size: 13px !important; } 
             .lap-row { font-size: 20px !important; gap: 15px !important; } 
             #lap-panel { width: 160px !important; max-height: 55vh !important; } 
-            #info-overlay { margin-right: 50px !important; }
             #sector-container { font-size: 3vh !important; gap: 15px !important; }
         }
 
