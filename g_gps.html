@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>KLAP DEGI ULTIMATE V2 - INT GPS</title>
       <link rel="manifest" href="/manifest.json"> 
- <style>
+<style>
         :root { --hrc-red: #E4002B; --hrc-white: #ffffff; --bg-dark: #000000; --hrc-orange: #FFA500; --hrc-blue: #004098; }
         
         body, html { 
@@ -25,47 +25,44 @@
             width: 100% !important; height: calc(100% - 60px) !important; z-index: 1; 
         }
 
-        /* --- UI レイアウト：共通ベース（上端基準に統一） --- */
+        /* --- UI レイアウト：共通ベース（コンテナの位置を調整） --- */
         .main-ui-container { 
             position: absolute; 
-            right: 10px; 
-            top: 45px; /* ★上から配置することで下へのはみ出しを防止 */
+            right: 12px; 
+            top: 85px; /* ★全体をさらに下げました（45px -> 85px） */
             display: flex; 
             align-items: flex-start; 
-            gap: 10px; 
+            gap: 12px; 
             z-index: 20; 
             pointer-events: auto; 
         }
 
-        /* 左側：メイン表示（回転数・ラップタイム） */
+        /* 左側：メイン表示 */
         #info-overlay { 
             display: flex; flex-direction: column; align-items: flex-end; 
             text-align: right; gap: 0px; pointer-events: none;
-            margin-right: 15px; /* ラップ履歴との隙間 */
+            margin-right: 18px; /* ラップ履歴との隙間 */
         }
 
         #rpm_val { font-size: 10vh; font-weight: 900; line-height: 0.7; margin-bottom: 5px; text-shadow: 3px 3px 12px #000; }
         #display1 { font-size: 15vh; font-weight: 900; line-height: 0.8; color: var(--hrc-white); text-shadow: 4px 4px 15px #000; }
         
-        /* セクタータイム横並び設定 */
         #sector-container { 
             display: flex; flex-direction: row !important; justify-content: flex-end; 
             gap: 8px; font-size: 2.5vh; font-weight: 900; width: 100%; white-space: nowrap; margin-top: 2px;
         }
         .sec-box { text-shadow: 2px 2px 10px #000; color: #fff; }
-        #display { font-size: 2.5vh; opacity: 0.8; margin-top: 2px; } /* TOTAL */
+        #display { font-size: 2.5vh; opacity: 0.8; margin-top: 2px; }
 
         /* 右側：パネル類 */
-        .right-panels { display: flex; flex-direction: row; gap: 8px; align-items: flex-start; }
+        .right-panels { display: flex; flex-direction: row; gap: 10px; align-items: flex-start; }
         
-        /* ラップ履歴：高さを画面に合わせて自動調整 */
-        #lap-panel { width: 110px; max-height: 60vh; display: flex; flex-direction: column; overflow: hidden; }
+        #lap-panel { width: 110px; max-height: 55vh; display: flex; flex-direction: column; overflow: hidden; }
         #lap { flex: 1; overflow-y: auto; scrollbar-width: none; }
         #lap::-webkit-scrollbar { display: none; }
         .lap-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; font-weight: 900; }
         .best-lap { color: var(--hrc-red) !important; } 
 
-        /* SPEED/MAX/TEMP パネル */
         .data-panel { display: flex; flex-direction: column; gap: 8px; width: 80px; }
         .data-box { display: flex; flex-direction: column; align-items: flex-end; text-align: right; margin-bottom: 2px; }
         .val { font-size: 30px; font-weight: 900; line-height: 0.8; text-shadow: 2px 2px 8px #000; }
@@ -74,28 +71,28 @@
         footer { height: 55px; display: flex; gap: 2px; padding: 4px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
         button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 9px; font-weight: bold; min-width: 0; cursor: pointer; }
 
-        /* --- iPhone 8 横画面：高さが低いため、さらに微調整 --- */
+        /* --- iPhone 8 横画面：高さ制限が厳しいため微調整 --- */
         @media screen and (max-width: 667px) and (orientation: landscape) {
-            .main-ui-container { top: 35px !important; } /* さらに上へ */
-            #info-overlay { margin-right: 20px !important; }
-            #display1 { font-size: 14vh !important; }
+            .main-ui-container { top: 75px !important; } /* バーとの重なりを避けつつボタンも避ける絶妙な位置 */
+            #info-overlay { margin-right: 22px !important; }
+            #display1 { font-size: 13vh !important; }
             #rpm_val { font-size: 9vh !important; }
             .data-panel { width: 75px !important; gap: 4px !important; }
             .data-panel .val { font-size: 26px !important; }
-            #lap-panel { width: 105px !important; max-height: 55vh !important; }
+            #lap-panel { width: 105px !important; max-height: 48vh !important; }
         }
 
-        /* --- AQUOS専用：文字拡大と位置補正 --- */
+        /* --- AQUOS専用：位置とサイズの拡大 --- */
         @media screen and (min-width: 400px) and (orientation: landscape) {
-            .main-ui-container { top: 55px !important; } /* AQUOSは少し下げる */
+            .main-ui-container { top: 110px !important; } /* AQUOSは画面が広いので110pxまで下げて余裕を持たせる */
             .data-panel { width: 110px !important; gap: 15px !important; }
             .data-panel .val { font-size: 42px !important; } 
             .data-panel .label { font-size: 13px !important; } 
             
             .lap-row { font-size: 20px !important; gap: 15px !important; } 
-            #lap-panel { width: 160px !important; max-height: 65vh !important; } 
+            #lap-panel { width: 160px !important; max-height: 55vh !important; } 
 
-            #info-overlay { margin-right: 35px !important; }
+            #info-overlay { margin-right: 40px !important; }
             #sector-container { font-size: 3vh !important; gap: 15px !important; }
         }
 
