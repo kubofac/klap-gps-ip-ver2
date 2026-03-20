@@ -55,7 +55,7 @@
 
     /* 中央：ラップ履歴（セクター内包） */
     #lap-panel { 
-        width: 170px; /* 横幅を少し広げてセクターを収まりやすく */
+        width: 175px; /* セクター3つを並べるために十分な幅を確保 */
         height: 100%; 
         display: flex; 
         flex-direction: column; 
@@ -71,6 +71,7 @@
         flex-direction: column; 
         border-bottom: 1px solid rgba(255,255,255,0.1); 
         padding: 5px 0; 
+        width: 100%;
     }
     /* 上段：L番号とタイム */
     .lap-row { 
@@ -80,17 +81,23 @@
         font-weight: 900; 
         width: 100%;
     }
-    /* ★下段：セクターを強制的に横一行に並べる設定 */
+    /* ★下段：セクターを「3等分」して「横一行」に絶対固定 */
     .sector-row { 
-        display: flex; 
-        flex-direction: row !important; /* 強制横並び */
-        justify-content: flex-start; 
-        gap: 10px; /* セクター間の隙間 */
+        display: flex !important; 
+        flex-direction: row !important; 
+        justify-content: space-between !important; 
+        align-items: center;
         font-size: 10px; 
         color: #aaa; 
-        margin-top: 3px; 
-        width: 100%;
-        white-space: nowrap; /* 折り返し禁止 */
+        margin-top: 4px; 
+        width: 100% !important;
+        white-space: nowrap; 
+    }
+    /* 各セクターを33%幅で固定し、折り返しを封じる */
+    .sector-row span {
+        display: inline-block;
+        width: 33%;
+        text-align: left;
     }
     .best-lap { color: var(--hrc-red) !important; }
 
@@ -112,14 +119,14 @@
         display: flex; align-items: center; justify-content: center; height: 100%; pointer-events: auto; 
     }
 
-    /* --- 【iPhone 8】専用レイアウト --- */
+    /* --- 【iPhone 8】専用レイアウト修正 --- */
     @media screen and (max-width: 667px) and (orientation: landscape) {
         .main-ui-container { top: 0 !important; height: 100% !important; }
         .data-panel { position: absolute !important; right: 12px !important; top: 65px !important; width: 80px !important; gap: 4px !important; padding-top: 0 !important; display: flex !important; }
-        #lap-panel { position: absolute !important; right: 105px !important; top: 65px !important; width: 130px !important; padding-top: 0 !important; }
+        #lap-panel { position: absolute !important; right: 105px !important; top: 65px !important; width: 140px !important; padding-top: 0 !important; }
         .lap-row { font-size: 13px !important; }
-        .sector-row { font-size: 9px !important; gap: 6px !important; } /* iPhone 8用にさらに微調整 */
-        #info-overlay { position: absolute !important; right: 260px !important; top: 20px !important; }
+        .sector-row { font-size: 9px !important; } 
+        #info-overlay { position: absolute !important; right: 265px !important; top: 20px !important; }
         #rpm_val { font-size: 9vh !important; }
         #display1 { font-size: 18vh !important; }
     }
@@ -128,9 +135,9 @@
     @media screen and (min-width: 400px) and (orientation: landscape) {
         .val { font-size: 42px !important; } 
         .label { font-size: 14px !important; } 
-        #lap-panel { width: 180px !important; }
+        #lap-panel { width: 190px !important; }
         .lap-row { font-size: 19px !important; }
-        .sector-row { font-size: 12px !important; gap: 12px !important; }
+        .sector-row { font-size: 12px !important; }
         #info-overlay { position: relative !important; margin-top: 85px !important; }
     }
 
