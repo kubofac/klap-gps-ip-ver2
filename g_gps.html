@@ -62,7 +62,7 @@
         footer { height: 55px; display: flex; gap: 2px; padding: 4px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
         button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 9px; font-weight: bold; min-width: 0; cursor: pointer; }
 
-        /* --- 【決定版】iPhone 8 横画面：完全に独立させて上に固定 --- */
+        /* --- 【iPhone 8】絶対位置を底上げして固定 --- */
         @media screen and (max-width: 667px) and (orientation: landscape) {
             .main-ui-container { top: 0 !important; right: 8px !important; height: 100%; width: 100%; pointer-events: none; }
             
@@ -70,16 +70,16 @@
             .right-panels { 
                 position: absolute !important; 
                 right: 0px !important; 
-                top: -15px !important; /* 強制引き上げ */
+                bottom: 145px !important; /* ★下から逆算して配置（以前のtopより高い位置へ） */
                 pointer-events: auto;
             }
             
-            /* 左側（回転数・ラップ）：top値をさらに小さくして確実に引き上げ */
+            /* 左側（回転数・ラップ） */
             #info-overlay { 
                 position: absolute !important; 
                 right: 265px !important; 
-                top: 40px !important; /* ★ 55pxから40pxへ。これで確実に上がります */
-                margin-top: 0px !important; /* AQUOSの下げ設定を完全に無効化 */
+                bottom: 130px !important; /* ★ここも下から逆算して、履歴より少し低い位置へ */
+                margin: 0 !important;
                 pointer-events: none;
             }
 
@@ -90,16 +90,10 @@
             #rpm_val { font-size: 9.5vh !important; }
         }
 
-        /* --- AQUOS専用：左側（回転数・ラップ）のみを下げる --- */
+        /* --- 【AQUOS】左側のみ下げ --- */
         @media screen and (min-width: 400px) and (orientation: landscape) {
-            /* AQUOSなど幅広端末では共通コンテナの位置からスタート */
             .main-ui-container { top: 110px !important; } 
-            
-            #info-overlay { 
-                margin-top: 70px !important; /* ★ここを増やして、AQUOSの左側だけを下げる */
-                margin-right: 50px !important; 
-            }
-
+            #info-overlay { margin-top: 70px !important; margin-right: 50px !important; }
             .data-panel { width: 110px !important; gap: 15px !important; }
             .data-panel .val { font-size: 42px !important; } 
             .data-panel .label { font-size: 13px !important; } 
