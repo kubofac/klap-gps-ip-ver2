@@ -43,42 +43,49 @@
         #history-table td { padding: 8px; border-bottom: 1px solid #333; text-align: center; }
         .close-btn { background: var(--hrc-red); padding: 15px; text-align: center; font-weight: bold; border-radius: 4px; cursor: pointer; }
        /* iPhone 8 (375px) 以下：右端ゼロ距離・右揃え強制 */
+/* iPhone 8 (375px) 以下専用：詳細度を極限まで高めた強制右寄せ */
 @media screen and (max-width: 375px) {
-    /* 1. コンテナを右端 0 に固定 */
-    .main-ui-container {
-        right: 0px !important; 
+    /* 1. 全体を包むコンテナを右端 0 に固定 */
+    html body div.main-ui-container {
+        right: 0px !important;
+        left: auto !important;
         padding-right: 0px !important;
         justify-content: flex-end !important;
+        display: flex !important;
     }
 
-    /* 2. SPEEDパネルの「箱」を右寄せにする */
-    .data-panel {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-end !important; /* ★これが右揃えの決め手 */
-        width: 80px !important; 
+    /* 2. SPEED/MAX等の「縦に並ぶ箱」自体を右端に寄せる */
+    html body .data-panel {
+        width: 80px !important;     /* 箱を3桁分の幅に絞る */
         margin-right: 0px !important;
-    }
-
-    /* 3. SPEEDラベルと数値を個別に右寄せ */
-    .data-box {
         display: flex !important;
         flex-direction: column !important;
-        align-items: flex-end !important; /* ★中身を右に寄せる */
-        width: 100% !important;
+        align-items: flex-end !important; /* ★箱の中身を右に寄せる */
     }
 
-    /* 4. 数字と文字を右端の1ピクセルまで寄せる */
-    .val, .label {
-        text-align: right !important; /* 文字の向きを右へ */
+    /* 3. SPEEDラベルと数値が入っている各ボックス */
+    html body .data-box {
         width: 100% !important;
-        display: block !important;
-        padding-right: 5px !important; /* 画面端に少しだけ余白(5px)を作る */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important; /* ★中身を右端に揃える */
+        text-align: right !important;    /* ★念のためのテキスト右寄せ */
+        padding-right: 5px !important;   /* 画面端に文字がくっつきすぎない遊び */
     }
 
-    /* 5. 左側のラップタイム(display1)を縮小して画面内に戻す */
+    /* 4. 数値（0など）とラベル（SPEEDなど）を個別に右寄せ */
+    html body .val, 
+    html body .label {
+        width: auto !important;          /* 幅を自動にして右に寄せやすくする */
+        display: inline-block !important; /* 右寄せを効かせるための設定 */
+        text-align: right !important;    /* 文字を右端へ */
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* 5. 一番左のラップタイムが左に突き抜けるのを防ぐ */
     #display1 {
-        font-size: 10vh !important;
+        font-size: 10vh !important;     /* 文字を小さくして画面内に引き戻す */
         text-align: right !important;
     }
 }
