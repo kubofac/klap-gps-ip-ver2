@@ -43,28 +43,27 @@
         #history-table td { padding: 8px; border-bottom: 1px solid #333; text-align: center; }
         .close-btn { background: var(--hrc-red); padding: 15px; text-align: center; font-weight: bold; border-radius: 4px; cursor: pointer; }
         /* iPhone 8 (375px) 以下の端末専用の調整 */
-/* iPhone 8 (375px) 以下の端末専用：右寄せの最終解決 */
 /* iPhone 8 (375px) 以下の端末専用：右端の余白を物理的に抹殺する */
 @media screen and (max-width: 375px) {
-    /* 1. コンテナ自体を右の壁に「0」で叩きつける */
+    /* 1. コンテナ自体を右の壁に「0」で吸着させる */
     .main-ui-container {
         right: 0px !important;       /* 10pxなどの遊びを一切排除 */
         left: auto !important;
         width: 100% !important;      /* 画面全幅を使い切る */
-        gap: 6px !important;         /* カラム間を詰め、左側(ラップタイム)のはみ出しを抑制 */
+        gap: 4px !important;         /* カラム間を極限まで詰め、左側のはみ出しを抑制 */
         justify-content: flex-end !important; /* ★中身を右に寄せる */
-        padding-right: 0px !important; /* iPhoneのセーフエリア等を無視して右端へ */
+        padding-right: 0px !important; 
     }
 
     /* 2. SPEEDパネル：内部の並び順を「右基準」に完全固定 */
     .data-panel {
-        width: 85px !important;      /* 3桁分(約85px)の「右端スロット」を作成 */
-        min-width: 85px !important;
+        width: 80px !important;      /* 3桁分(約80px)の「右端スロット」を作成 */
+        min-width: 80px !important;
         margin: 0 !important;
         padding: 0 !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: flex-end !important; /* ★中の要素を右の壁に寄せる */
+        align-items: flex-end !important; /* ★中の要素を右の壁に強制的に寄せる */
     }
 
     /* 3. SPEED / MAX などの各項目を保持する箱 */
@@ -72,9 +71,10 @@
         width: 100% !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: flex-end !important; /* ★ラベルも数値も右端に揃える */
+        /* ★重要：ここを flex-end にすることで、ラベルも数値も右端に揃います */
+        align-items: flex-end !important; 
         margin-bottom: 8px !important;
-        padding-right: 4px !important;    /* 画面端との最低限の余白（4px） */
+        padding-right: 4px !important;    /* 画面端との最低限の隙間 */
     }
 
     /* 4. 数値（0など）：右寄せにし、右側の隙間を1pxも残さない */
@@ -84,7 +84,7 @@
         width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
-        line-height: 0.9 !important;
+        display: block !important;    /* 文字の配置を確実にする */
     }
 
     /* 5. ラベル（SPEEDなど）：右寄せにし、数値の右端とラインを合わせる */
@@ -94,7 +94,7 @@
         width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
-        color: var(--hrc-red);
+        display: block !important;
     }
 
     /* 6. ラップタイム（一番左）のサイズを下げて、画面内に引き戻す */
@@ -103,7 +103,7 @@
         text-align: right !important;
     }
     #lap-panel {
-        width: 100px !important;
+        width: 95px !important;
     }
 }
     </style>
