@@ -62,38 +62,42 @@
         footer { height: 55px; display: flex; gap: 2px; padding: 4px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
         button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 9px; font-weight: bold; min-width: 0; cursor: pointer; }
 
-        /* --- 【iPhone 8】絶対位置を底上げして固定 --- */
+        /* --- 【iPhone 8】上寄せを最優先し、全体を強制引き上げ --- */
         @media screen and (max-width: 667px) and (orientation: landscape) {
-            .main-ui-container { top: 0 !important; right: 8px !important; height: 100%; width: 100%; pointer-events: none; }
+            .main-ui-container { 
+                top: 0 !important; /* コンテナ自体を最上部へ */
+                right: 8px !important; 
+                height: auto !important;
+                pointer-events: none; 
+            }
             
-            /* 右側（履歴・SPEED） */
+            /* 右側（履歴・SPEED）：バーのすぐ下まで引き上げ */
             .right-panels { 
-                position: absolute !important; 
-                right: 0px !important; 
-                bottom: 145px !important; /* ★下から逆算して配置（以前のtopより高い位置へ） */
+                position: relative !important;
+                margin-top: 45px !important; /* ★ここを減らすとさらに上がります */
                 pointer-events: auto;
             }
             
-            /* 左側（回転数・ラップ） */
+            /* 左側（回転数・ラップ）：高さを維持しつつ右と分離 */
             #info-overlay { 
                 position: absolute !important; 
-                right: 265px !important; 
-                bottom: 130px !important; /* ★ここも下から逆算して、履歴より少し低い位置へ */
-                margin: 0 !important;
+                right: 255px !important; /* 空白を適正化 */
+                top: 55px !important;   /* 高さを以前の良好な位置に固定 */
+                margin-top: 0px !important; 
                 pointer-events: none;
             }
 
             .data-panel { width: 75px !important; gap: 1px !important; }
             .data-panel .val { font-size: 26px !important; }
-            #lap-panel { width: 105px !important; max-height: 230px !important; }
+            #lap-panel { width: 105px !important; max-height: 220px !important; }
             #display1 { font-size: 13.5vh !important; }
             #rpm_val { font-size: 9.5vh !important; }
         }
 
-        /* --- 【AQUOS】左側のみ下げ --- */
+        /* --- 【AQUOS】左側（回転数・ラップ）のみ下げ --- */
         @media screen and (min-width: 400px) and (orientation: landscape) {
             .main-ui-container { top: 110px !important; } 
-            #info-overlay { margin-top: 70px !important; margin-right: 50px !important; }
+            #info-overlay { margin-top: 75px !important; margin-right: 50px !important; }
             .data-panel { width: 110px !important; gap: 15px !important; }
             .data-panel .val { font-size: 42px !important; } 
             .data-panel .label { font-size: 13px !important; } 
