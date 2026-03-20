@@ -62,25 +62,25 @@
         footer { height: 55px; display: flex; gap: 2px; padding: 4px; background: #000; border-top: 1px solid #333; z-index: 100; position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: env(safe-area-inset-bottom); }
         button { flex: 1; background: #1a1a1a; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 9px; font-weight: bold; min-width: 0; cursor: pointer; }
 
-        /* --- 【修正】iPhone 8 横画面：右側を物理的に持ち上げ、左を離す --- */
+        /* --- 【修正】iPhone 8 横画面：右側を物理的にマイナス値で引き上げ --- */
         @media screen and (max-width: 667px) and (orientation: landscape) {
             .main-ui-container { top: 0 !important; right: 8px !important; height: 100%; width: 100%; pointer-events: none; }
             
-            /* 1. 右側：タコメーターバーに食い込む勢いで上に固定 */
+            /* 1. 右側：マイナス top を使用してバーの高さまで強制的に引き上げ */
             .right-panels { 
                 position: absolute !important; 
                 right: 0px !important; 
-                top: 35px !important; /* ★前回よりさらに上げました（42px -> 35px） */
+                top: -15px !important; /* ★バーの真横（上部限界）まで引き上げました */
                 pointer-events: auto;
             }
-            .data-panel { width: 75px !important; gap: 2px !important; }
+            .data-panel { width: 75px !important; gap: 1px !important; }
             .data-panel .val { font-size: 26px !important; }
-            #lap-panel { width: 105px !important; max-height: 220px !important; }
+            #lap-panel { width: 105px !important; max-height: 230px !important; }
 
-            /* 2. 左側：高さを現状維持（55px）しつつ、さらに左へ逃がす */
+            /* 2. 左側：高さ位置はそのまま（55px）を維持 */
             #info-overlay { 
                 position: absolute !important; 
-                right: 285px !important; /* ★空白をさらに広げました（250px -> 285px） */
+                right: 310px !important; /* ★空白をさらに広げました（285px -> 310px） */
                 top: 55px !important;   /* ★ご要望通り高さはそのまま */
                 pointer-events: none;
             }
@@ -88,7 +88,7 @@
             #rpm_val { font-size: 9.5vh !important; }
         }
 
-        /* --- AQUOS専用：安定設定 --- */
+        /* --- AQUOS専用 --- */
         @media screen and (min-width: 400px) and (orientation: landscape) {
             .main-ui-container { top: 110px !important; } 
             .data-panel { width: 110px !important; gap: 15px !important; }
