@@ -457,41 +457,35 @@ function drawTacho(rpm) {
     const segments = 75;
     const active = Math.floor((rpm / 14000) * segments);
 
-    // --- 画面左下から立ち上げるための計算 ---
-    const sX = 25;           // 左端からのマージン
-    const hY = 40;           // 上部の直線の高さ（上端からの距離）
-    const bY = h - 10;       // 下部の開始地点（下端からの距離）
-    
-    // 半径を「下の開始点」と「上の直線」の差分で決定する
-    const rad = bY - hY;     
-    const curveEnd = 30;     // 全75セグメント中、30番目までをカーブにする
-    const rightMargin = 40;  // 右端のスピードメーター等との余白
+    const sX = 25;
+    const hY = 40;
+    const bY = h - 10;
+    const rad = bY - hY;
+    const curveEnd = 30;
+    const rightMargin = 40;
 
     for (let i = 0; i <= segments; i++) {
         let x, y, ang, prog;
 
         if (i <= curveEnd) {
-            // 左下から左上へ向かうカーブ（9時方向から12時方向）
             prog = i / curveEnd;
             ang = Math.PI + (prog * (Math.PI / 2));
             x = sX + rad + Math.cos(ang) * rad;
-            y = bY + Math.sin(ang) * rad; // bY(下)を基準に回転
+            y = bY + Math.sin(ang) * rad;
         } else {
-            // 上部の水平直線（左から右へ）
             prog = (i - curveEnd) / (segments - curveEnd);
             x = (sX + rad) + (prog * (w - (sX + rad) - rightMargin));
             y = hY;
             ang = 1.5 * Math.PI;
         }
 
-        // スケール数字の描画
+        // --- スケール数字（外側の0〜14）の描画 ---
         if (i % 10 === 0 || i === segments) {
             ctx.save();
-            ctx.fillStyle = i <= active ? "#fff" : "#444";
+            ctx.fillStyle = (i <= active) ? "#fff" : "#444";
             const fontSize = Math.max(12, Math.floor(h * 0.05));
             ctx.font = `italic bold ${fontSize}px Arial`;
             ctx.textAlign = "center";
-            // 数字をバーの外側に配置（カーブ中は斜め、直線中は真上）
             const labelDist = 38;
             ctx.fillText(
                 Math.round((i / segments) * 14), 
@@ -501,22 +495,20 @@ function drawTacho(rpm) {
             ctx.restore();
         }
 
-        // バー本体の描画
+        // --- バー本体の描画（色判定をCSS変数から直接指定に変更） ---
         if (i < segments) {
-            let color = "#222";
+            let color = "#222"; 
             if (i < active) {
                 const currentRpmVal = (i / segments) * 14000;
-                if (currentRpmVal >= 12500) color = "var(--hrc-red)";
-                else if (currentRpmVal >= 8000) color = "var(--hrc-blue)";
-                else color = "#fff";
+                if (currentRpmVal >= 12500) color = "#E4002B";      // HRC RED
+                else if (currentRpmVal >= 8000) color = "#004098";  // HRC BLUE
+                else color = "#FFFFFF";                             // WHITE
             }
 
             ctx.fillStyle = color;
             ctx.save();
             ctx.translate(x, y);
             ctx.rotate(ang + Math.PI / 2);
-            
-            // バーのサイズ調整
             const barW = Math.max(4, w * 0.012);
             const barH = Math.max(25, h * 0.12);
             ctx.fillRect(-barW / 2, -barH / 2, barW, barH);
@@ -524,7 +516,7 @@ function drawTacho(rpm) {
         }
     }
 
-    // 各種数値の更新
+    // --- 【重要】数値テキストの更新 ---
     document.getElementById('rpm_val').textContent = Math.floor(rpm);
     document.getElementById('speed_val').textContent = Math.round(currentSpeedKmh);
     document.getElementById('max_speed_val').textContent = Math.round(maxSpeedInLap);
