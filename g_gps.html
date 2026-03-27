@@ -214,6 +214,7 @@
             border-radius: 4px; 
             cursor: pointer; 
         }
+     button.waiting { background: var(--hrc-orange) !important; color: #000; }
     </style>
 </head>
 <body>
@@ -271,6 +272,9 @@ let pulsePerRev = 1, cooldownMs = 15000, validDirection = null;
 let s1_abs = 0, s2_abs = 0, s3_abs = 0, lastPassedSectorTime = 0;
 let sectorDirections = { s1: null, s2: null, s3: null };
 let watchId = null, wakeLock = null;
+let bleDevice = null;
+let retryTimer = null;
+    
 
 const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
 
@@ -545,19 +549,55 @@ document.getElementById('lapBtn').onclick = () => {
     if (swState === 1) processLap(Date.now(), false); // 手動時はフリーズなし
     else if (confirm("RESET?")) location.reload();
 };
-document.getElementById('btConnect').onclick = async function() {
+document.getElementById('btConnect').onclick = async function connect() {
+    const btn = document.getElementById('btConnect');
     try {
-        const ble = await navigator.bluetooth.requestDevice({ filters: [{ services: [SERVICE_UUID] }] });
-        const server = await ble.gatt.connect();
+        // デバイス未選択なら取得、選択済みならそれを使う
+        if (!bleDevice) {
+            bleDevice = await navigator.bluetooth.requestDevice({ 
+                filters: [{ services: [SERVICE_UUID] }] 
+            });
+            // 切断イベントを登録
+            bleDevice.addEventListener('gattserverdisconnected', onDisconnected);
+        }
+
+        const server = await bleDevice.gatt.connect();
         const service = await server.getPrimaryService(SERVICE_UUID);
         const pC = await service.getCharacteristic(PULSE_UUID);
-        await pC.startNotifications(); this.classList.add('active');
+        
+        await pC.startNotifications();
+        btn.classList.remove('waiting'); // オレンジ解除
+        btn.classList.add('active');    // 赤（接続中）
+        
         pC.oncharacteristicvaluechanged = (e) => {
-            const data = e.target.value; currentRPM = (data.getUint16(0, true) * 60) / pulsePerRev;
-            currentTemp = data.getUint8(2); document.getElementById('temp_val').textContent = currentTemp;
+            const data = e.target.value;
+            currentRPM = (data.getUint16(0, true) * 60) / pulsePerRev;
+            currentTemp = data.getUint8(2);
+            document.getElementById('temp_val').textContent = currentTemp;
         };
-    } catch (e) { this.classList.remove('active'); }
+        
+        if (retryTimer) { clearTimeout(retryTimer); retryTimer = null; }
+
+    } catch (e) {
+        console.log(e);
+        onDisconnected(); // 失敗時も再試行ループへ
+    }
 };
+
+// 切断時に呼ばれる関数
+function onDisconnected() {
+    const btn = document.getElementById('btConnect');
+    btn.classList.remove('active');
+    btn.classList.add('waiting'); // オレンジ色（待機中）にするCSSが必要
+    
+    // 3秒後に再接続を試行
+    if (!retryTimer) {
+        retryTimer = setTimeout(() => {
+            retryTimer = null;
+            document.getElementById('btConnect').click(); 
+        }, 3000);
+    }
+}
 
 function timeFormat(ms){ if(ms<0) ms=0; const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000), ms2=Math.floor(ms%1000); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}.${ms2.toString().padStart(3,'0')}`; }
 
