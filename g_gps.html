@@ -454,8 +454,9 @@ function drawTacho(rpm) {
     const h = canvas.height = canvas.clientHeight;
     ctx.clearRect(0, 0, w, h);
 
-    const segments = 75;
-    const active = Math.floor((rpm / 14000) * segments);
+    const segments = 75; // バーの総本数
+    const maxRpmScale = 14000; // タコメーターの最大値
+    const active = Math.floor((rpm / maxRpmScale) * segments);
 
     const sX = 25;
     const hY = 40;
@@ -467,6 +468,7 @@ function drawTacho(rpm) {
     for (let i = 0; i <= segments; i++) {
         let x, y, ang, prog;
 
+        // レイアウト計算（カーブ部分と直線部分）
         if (i <= curveEnd) {
             prog = i / curveEnd;
             ang = Math.PI + (prog * (Math.PI / 2));
@@ -479,7 +481,7 @@ function drawTacho(rpm) {
             ang = 1.5 * Math.PI;
         }
 
-        // --- スケール数字（外側の0〜14）の描画 ---
+        // --- スケール数字（0〜14）の描画 ---
         if (i % 10 === 0 || i === segments) {
             ctx.save();
             ctx.fillStyle = (i <= active) ? "#fff" : "#444";
@@ -495,14 +497,21 @@ function drawTacho(rpm) {
             ctx.restore();
         }
 
-        // --- バー本体の描画（色判定をCSS変数から直接指定に変更） ---
+        // --- バー本体の描画（色分けロジック） ---
         if (i < segments) {
-            let color = "#222"; 
+            let color = "#222"; // デフォルト（未到達）
+            
             if (i < active) {
-                const currentRpmVal = (i / segments) * 14000;
-                if (currentRpmVal >= 12500) color = "#E4002B";      // HRC RED
-                else if (currentRpmVal >= 8000) color = "#004098";  // HRC BLUE
-                else color = "#FFFFFF";                             // WHITE
+                // このセグメントが何回転目にあたるかを計算
+                const segmentRpm = (i / segments) * maxRpmScale;
+
+                if (segmentRpm >= 10500) {
+                    color = "#E4002B"; // 10500以上：赤 (HRC RED)
+                } else if (segmentRpm >= 6000) {
+                    color = "#004098"; // 6000以上：青 (HRC BLUE)
+                } else {
+                    color = "#FFFFFF"; // それ未満：白
+                }
             }
 
             ctx.fillStyle = color;
@@ -516,12 +525,11 @@ function drawTacho(rpm) {
         }
     }
 
-    // --- 【重要】数値テキストの更新 ---
+    // 数値表示の更新
     document.getElementById('rpm_val').textContent = Math.floor(rpm);
     document.getElementById('speed_val').textContent = Math.round(currentSpeedKmh);
     document.getElementById('max_speed_val').textContent = Math.round(maxSpeedInLap);
 }
-
 document.getElementById('intGpsBtn').onclick = toggleInternalGps;
 document.getElementById('startBtn').onclick = function() {
     if (swState !== 1) {
