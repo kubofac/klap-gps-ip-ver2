@@ -341,16 +341,65 @@ document.getElementById('historyBtn').onclick = () => {
 
 document.getElementById('gpxBtn').onclick = () => {
     if (gpsPoints.length === 0) return;
-    const getL = (k) => { const p1 = localStorage.getItem(k + 'P1Lat'); return p1 ? `${p1},${localStorage.getItem(k + 'P1Lon')},${localStorage.getItem(k + 'P2Lat')},${localStorage.getItem(k + 'P2Lon')}` : ""; };
+    
+    // ライン情報の取得
+    const getL = (k) => { 
+        const p1 = localStorage.getItem(k + 'P1Lat'); 
+        return p1 ? `${p1},${localStorage.getItem(k + 'P1Lon')},${localStorage.getItem(k + 'P2Lat')},${localStorage.getItem(k + 'P2Lon')}` : ""; 
+    };
     const lineData = `SL:${getL('startLine')}|S1:${getL('s1Line')}|S2:${getL('s2Line')}|S3:${getL('s3Line')}`;
-    let gpx = `<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="KLAP_DEGI" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1"><metadata><desc>LINE_DATA[${lineData}]</desc></metadata><trk><trkseg>`;
-    const base = gpsPoints[0].time;
+    
+    // GPXヘッダー：標準的なスキーマ定義を追加
+    let gpx = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="KLAP_DEGI" 
+  xmlns="http://www.topografix.com/GPX/1/1" 
+  xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1">
+  <metadata>
+    <time>${new Date().toISOString()}</time>
+    <desc>LINE_DATA[${lineData}]</desc>
+  </metadata>
+  <trk>
+    <name>RaceLog_${new Date().toLocaleString()}</name>
+    <trkseg>`;
+
+    // 各ポイントの書き出し
     gpsPoints.forEach(p => {
-        const relTime = new Date(946684800000 + (p.time - base)).toISOString();
-        gpx += `<trkpt lat="${p.lat}" lon="${p.lon}"><time>${relTime}</time><speed>${(p.speed/3.6).toFixed(2)}</speed><extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>${Math.round(p.rpm)}</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions></trkpt>`;
+        // 修正点：計測時の実際の時刻（JST/UTC）をISO形式で変換
+        const timeISO = new Date(p.time).toISOString();
+        const speedMS = (p.speed / 3.6).toFixed(2);
+        const rpm = Math.round(p.rpm);
+
+        gpx += `
+      <trkpt lat="${p.lat}" lon="${p.lon}">
+        <time>${timeISO}</time>
+        <speed>${speedMS}</speed>
+        <extensions>
+          <gpxtpx:TrackPointExtension>
+            <gpxtpx:hr>${rpm}</gpxtpx:hr>
+            <gpxtpx:atemp>${currentTemp}</gpxtpx:atemp>
+          </gpxtpx:TrackPointExtension>
+        </extensions>
+      </trkpt>`;
     });
-    gpx += `</trkseg></trk></gpx>`;
-    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([gpx], { type: 'application/gpx+xml' })); a.download = `RaceLog_${Date.now()}.gpx`; a.click();
+
+    gpx += `
+    </trkseg>
+  </trk>
+</gpx>`;
+
+    // BLOBとして保存・ダウンロード実行
+    const blob = new Blob([gpx], { type: 'application/gpx+xml' });
+    const a = document.createElement('a');
+    const now = new Date();
+    const fileNameDate = now.getFullYear() + 
+                         String(now.getMonth() + 1).padStart(2, '0') + 
+                         String(now.getDate()).padStart(2, '0') + "_" + 
+                         String(now.getHours()).padStart(2, '0') + 
+                         String(now.getMinutes()).padStart(2, '0');
+    
+    a.href = URL.createObjectURL(blob);
+    a.download = `RaceLog_${fileNameDate}.gpx`;
+    a.click();
 };
 
 function timeFormat(ms){ if(ms<0) ms=0; const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000), ms2=Math.floor(ms%1000); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}.${ms2.toString().padStart(3,'0')}`; }
