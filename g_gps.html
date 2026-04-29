@@ -159,7 +159,7 @@ let pulsePerRev = 1, cooldownMs = 15000, validDirection = null;
 let s1_abs = 0, s2_abs = 0, s3_abs = 0, lastPassedSectorTime = 0;
 let sectorDirections = { s1: null, s2: null, s3: null };
 let watchId = null, wakeLock = null, bleDevice = null, retryTimer = null;
-
+let displayedRPM = 0;
 const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
 
 function initLines() {
@@ -289,7 +289,9 @@ function mainLoop() {
 }
 
 function renderLoop() {
-    drawTacho(currentRPM);
+    // 0.15の部分で滑らかさを調整（小さいほどゆっくり、大きいほど機敏）
+    displayedRPM += (currentRPM - displayedRPM) * 0.15; 
+    drawTacho(displayedRPM);
     requestAnimationFrame(renderLoop);
 }
 
@@ -316,7 +318,7 @@ function drawTacho(rpm) {
             ctx.fillRect(-Math.max(4, w * 0.012) / 2, -Math.max(25, h * 0.12) / 2, Math.max(4, w * 0.012), Math.max(25, h * 0.12)); ctx.restore();
         }
     }
-    document.getElementById('rpm_val').textContent = Math.floor(rpm);
+    document.getElementById('rpm_val').textContent = Math.floor(currentRPM);
     document.getElementById('speed_val').textContent = Math.round(currentSpeedKmh);
     document.getElementById('max_speed_val').textContent = Math.round(maxSpeedInLap);
 }
