@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "app.vercel.klap_gps_ip_ver2.twa",
-        "sha256_cert_fingerprints": ["6D:46:4E:27:92:45:A0:6A:F6:5C:BD:1C:E4:21:D7:87:F4:FD:51:CB:88:10:41:E7:08:6E:D6:57:18:BD:84:EC"]
+        "package_name": "com.kfactoryclub.klap_gps_ip_ver2.twa",
+        "sha256_cert_fingerprints": ["A1:52:19:20:3D:0A:65:F3:E3:C3:69:C8:A3:FB:A1:2E:BF:82:1C:E3:8C:06:9C:77:60:D1:AB:B3:37:65:E3:C7"]
       }
     }]
